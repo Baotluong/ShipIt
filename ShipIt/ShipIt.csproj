@@ -190,6 +190,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BetController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
@@ -199,9 +200,22 @@
     <Compile Include="Migrations\201712041429037_AddedBetModelAndLinkedWithApplicationUser.Designer.cs">
       <DependentUpon>201712041429037_AddedBetModelAndLinkedWithApplicationUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712041436009_AddedToBetModelDbContext.cs" />
+    <Compile Include="Migrations\201712041436009_AddedToBetModelDbContext.Designer.cs">
+      <DependentUpon>201712041436009_AddedToBetModelDbContext.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712051446015_AddedBetStatusModel.cs" />
+    <Compile Include="Migrations\201712051446015_AddedBetStatusModel.Designer.cs">
+      <DependentUpon>201712051446015_AddedBetStatusModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712051447357_PopulateBetStatus.cs" />
+    <Compile Include="Migrations\201712051447357_PopulateBetStatus.Designer.cs">
+      <DependentUpon>201712051447357_PopulateBetStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bet.cs" />
+    <Compile Include="Models\BetStatus.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -264,6 +278,7 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Bet\View.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -284,6 +299,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201712041429037_AddedBetModelAndLinkedWithApplicationUser.resx">
       <DependentUpon>201712041429037_AddedBetModelAndLinkedWithApplicationUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712041436009_AddedToBetModelDbContext.resx">
+      <DependentUpon>201712041436009_AddedToBetModelDbContext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712051446015_AddedBetStatusModel.resx">
+      <DependentUpon>201712051446015_AddedBetStatusModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712051447357_PopulateBetStatus.resx">
+      <DependentUpon>201712051447357_PopulateBetStatus.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

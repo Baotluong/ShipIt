@@ -15,7 +15,7 @@ namespace ShipIt.Models
 
         public float BetFee { get; set; }
 
-        public int BetStatus { get; set; }
+        public BetStatus BetStatus { get; set; }
 
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
     }
