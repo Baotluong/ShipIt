@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using ShipIt.Models;
@@ -28,7 +29,7 @@ namespace ShipIt.Controllers
 
         public ActionResult New()
         {
-            var betStatus = _context.BetStatus.ToList();
+            var betStatus = _context.BetStatuses.ToList();
 
             var viewModel = new BetFormViewModel
             {
@@ -39,17 +40,26 @@ namespace ShipIt.Controllers
         }
 
         [HttpPost]
-        public ActionResult Save(Bet bet)
+        public ActionResult Save(NewBetViewModel bet)
         {
-            var betStatus = _context.BetStatus.ToList();
+            var NewBet = new Bet();
 
-            var viewModel = new BetFormViewModel
+            List<string> NewBetUsers = new List<string>(bet.Users.ToString().Split(',').ToList<string>());
+            List<ApplicationUser> UsersInDb = new List<ApplicationUser>();
+            foreach (string user in NewBetUsers)
             {
-                BetStatus = betStatus
-            };
+                var UserinDb = _context.Users
+                    .Where(u => u.Email == user).SingleOrDefault();
+                UsersInDb.Add(UserinDb);
+            }
+            //TODO: add the rest of the items and do a split on the user ids by comma. then search the users for the ids
 
-            bet.StartDate = DateTime.Now;
-            _context.Bets.Add(bet);
+            NewBet.StartDate = DateTime.Now;
+            NewBet.EndTime = bet.EndTime;
+            NewBet.BetFee = bet.BetFee;
+            NewBet.ApplicationUsers = UsersInDb;
+
+            _context.Bets.Add(NewBet);
 
             _context.SaveChanges();
 

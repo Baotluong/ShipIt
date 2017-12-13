@@ -29,7 +29,7 @@ namespace ShipIt.Models
         }
 
         public virtual DbSet<Bet> Bets { get; set; }
-        public virtual DbSet<BetStatus> BetStatus { get; set; }
+        public virtual DbSet<BetStatus> BetStatuses { get; set; }
 
         public static ApplicationDbContext Create()
         {

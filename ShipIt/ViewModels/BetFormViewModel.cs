@@ -10,6 +10,6 @@ namespace ShipIt.ViewModels
     {
         public IEnumerable<BetStatus> BetStatus { get; set; }
 
-        public Bet Bet { get; set; }
+        public NewBetViewModel Bet { get; set; }
     }
 }
