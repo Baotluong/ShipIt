@@ -44,7 +44,10 @@ namespace ShipIt.Controllers
         {
             var NewBet = new Bet();
 
-            List<string> NewBetUsers = new List<string>(bet.Users.ToString().Split(',').ToList<string>());
+            List<string> NewBetUsers = new List<string>();
+            NewBetUsers.Add(bet.User1);
+            NewBetUsers.Add(bet.User2);
+
             List<ApplicationUser> UsersInDb = new List<ApplicationUser>();
             foreach (string user in NewBetUsers)
             {

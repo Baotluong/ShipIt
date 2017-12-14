@@ -17,8 +17,12 @@
         @Html.TextBoxFor(m => m.Bet.BetFee, new { @class = "form-control" })
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.Bet.Users)
-        @Html.TextBoxFor(m => m.Bet.Users, new { @class = "form-control" })
+        @Html.LabelFor(m => m.Bet.User1)
+        @Html.TextBoxFor(m => m.Bet.User1, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Bet.User2)
+        @Html.TextBoxFor(m => m.Bet.User2, new { @class = "form-control" })
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 }
