@@ -7,13 +7,13 @@ namespace ShipIt.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class AddedBetStatusModel : IMigrationMetadata
+    public sealed partial class InitMigration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedBetStatusModel));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(InitMigration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201712051446015_AddedBetStatusModel"; }
+            get { return "201712140208595_InitMigration"; }
         }
         
         string IMigrationMetadata.Source

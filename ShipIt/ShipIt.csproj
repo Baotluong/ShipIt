@@ -196,26 +196,15 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201712041429037_AddedBetModelAndLinkedWithApplicationUser.cs" />
-    <Compile Include="Migrations\201712041429037_AddedBetModelAndLinkedWithApplicationUser.Designer.cs">
-      <DependentUpon>201712041429037_AddedBetModelAndLinkedWithApplicationUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712041436009_AddedToBetModelDbContext.cs" />
-    <Compile Include="Migrations\201712041436009_AddedToBetModelDbContext.Designer.cs">
-      <DependentUpon>201712041436009_AddedToBetModelDbContext.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712051446015_AddedBetStatusModel.cs" />
-    <Compile Include="Migrations\201712051446015_AddedBetStatusModel.Designer.cs">
-      <DependentUpon>201712051446015_AddedBetStatusModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712051447357_PopulateBetStatus.cs" />
-    <Compile Include="Migrations\201712051447357_PopulateBetStatus.Designer.cs">
-      <DependentUpon>201712051447357_PopulateBetStatus.cs</DependentUpon>
+    <Compile Include="Migrations\201712140208595_InitMigration.cs" />
+    <Compile Include="Migrations\201712140208595_InitMigration.Designer.cs">
+      <DependentUpon>201712140208595_InitMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bet.cs" />
     <Compile Include="Models\BetStatus.cs" />
+    <Compile Include="Models\Condition.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -246,7 +235,9 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -300,17 +291,8 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201712041429037_AddedBetModelAndLinkedWithApplicationUser.resx">
-      <DependentUpon>201712041429037_AddedBetModelAndLinkedWithApplicationUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712041436009_AddedToBetModelDbContext.resx">
-      <DependentUpon>201712041436009_AddedToBetModelDbContext.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712051446015_AddedBetStatusModel.resx">
-      <DependentUpon>201712051446015_AddedBetStatusModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712051447357_PopulateBetStatus.resx">
-      <DependentUpon>201712051447357_PopulateBetStatus.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201712140208595_InitMigration.resx">
+      <DependentUpon>201712140208595_InitMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

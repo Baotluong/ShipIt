@@ -14,5 +14,9 @@ namespace ShipIt.ViewModels
         public string User1 { get; set; }
 
         public string User2 { get; set; }
+
+        public string User1Condition { get; set; }
+
+        public string User2Condition { get; set; }
     }
 }
