@@ -18,11 +18,19 @@
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Bet.User1)
-        @Html.TextBoxFor(m => m.Bet.User1, new { @class = "form-control" })
+        @Html.TextBoxFor(m => m.Bet.User1, new { @class = "form-control", @Value = Model.CurrentUserEmail})
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Bet.User1Condition)
+        @Html.TextBoxFor(m => m.Bet.User1Condition, new { @class = "form-control" })
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Bet.User2)
         @Html.TextBoxFor(m => m.Bet.User2, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Bet.User2Condition)
+        @Html.TextBoxFor(m => m.Bet.User2Condition, new { @class = "form-control" })
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 }

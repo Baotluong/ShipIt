@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web.Mvc;
 using ShipIt.Models;
 using ShipIt.ViewModels;
+using System.Web.Security;
+using Microsoft.AspNet.Identity;
 
 namespace ShipIt.Controllers
 {
@@ -30,10 +32,13 @@ namespace ShipIt.Controllers
         public ActionResult New()
         {
             var betStatus = _context.BetStatuses.ToList();
+            string currentUserId = User.Identity.GetUserId();
+            string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
 
             var viewModel = new BetFormViewModel
             {
-                BetStatus = betStatus
+                BetStatus = betStatus,
+                CurrentUserEmail = currentUserEmail
             };
 
             return View("BetForm", viewModel);
@@ -42,28 +47,45 @@ namespace ShipIt.Controllers
         [HttpPost]
         public ActionResult Save(NewBetViewModel bet)
         {
-            var NewBet = new Bet();
+            //TODONEXT: Finish the validations
+            var newBet = new Bet();
 
-            List<string> NewBetUsers = new List<string>();
-            NewBetUsers.Add(bet.User1);
-            NewBetUsers.Add(bet.User2);
+            var newBetUserConditions= new List<KeyValuePair<string, string>>() {
+                new KeyValuePair<string, string>(bet.User1, bet.User1Condition),
+                new KeyValuePair<string, string>(bet.User2, bet.User2Condition)
+            };
 
             List<ApplicationUser> UsersInDb = new List<ApplicationUser>();
-            foreach (string user in NewBetUsers)
+            foreach (KeyValuePair<string, string> userConditions in newBetUserConditions)
             {
                 var UserinDb = _context.Users
-                    .Where(u => u.Email == user).SingleOrDefault();
+                    .Where(u => u.Email == userConditions.Key).SingleOrDefault();
                 UsersInDb.Add(UserinDb);
             }
-            //TODO: add the rest of the items and do a split on the user ids by comma. then search the users for the ids
 
-            NewBet.StartDate = DateTime.Now;
-            NewBet.EndTime = bet.EndTime;
-            NewBet.BetFee = bet.BetFee;
-            NewBet.ApplicationUsers = UsersInDb;
+            newBet.StartDate = DateTime.Now;
+            newBet.EndTime = bet.EndTime;
+            newBet.BetFee = bet.BetFee;
+            newBet.ApplicationUsers = UsersInDb;
+            string currentUserId = User.Identity.GetUserId();
+            newBet.BetCreator = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault();
 
-            _context.Bets.Add(NewBet);
+            List<Condition> NewBetConditions = new List<Condition>();
+            foreach (KeyValuePair<string, string> userConditions in newBetUserConditions)
+            {
+                var UserinDb = _context.Users
+                    .Where(u => u.Email == userConditions.Key).SingleOrDefault();
+                var newCondition = new Condition()
+                {
+                    WinCondition = userConditions.Value,
+                    Bet = newBet,
+                    ApplicationUser = UserinDb
+                };
+                NewBetConditions.Add(newCondition);
+            }
+            newBet.Conditions = NewBetConditions;
 
+            _context.Bets.Add(newBet);
             _context.SaveChanges();
 
             return RedirectToAction("Index", "Bets");

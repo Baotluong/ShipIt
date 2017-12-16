@@ -200,6 +200,14 @@
     <Compile Include="Migrations\201712140208595_InitMigration.Designer.cs">
       <DependentUpon>201712140208595_InitMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712161638066_AddedBetCreator.cs" />
+    <Compile Include="Migrations\201712161638066_AddedBetCreator.Designer.cs">
+      <DependentUpon>201712161638066_AddedBetCreator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712161818397_ChangedBetDateToNullable.cs" />
+    <Compile Include="Migrations\201712161818397_ChangedBetDateToNullable.Designer.cs">
+      <DependentUpon>201712161818397_ChangedBetDateToNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bet.cs" />
@@ -293,6 +301,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201712140208595_InitMigration.resx">
       <DependentUpon>201712140208595_InitMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712161638066_AddedBetCreator.resx">
+      <DependentUpon>201712161638066_AddedBetCreator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712161818397_ChangedBetDateToNullable.resx">
+      <DependentUpon>201712161818397_ChangedBetDateToNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
