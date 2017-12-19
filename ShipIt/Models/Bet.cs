@@ -24,7 +24,7 @@ namespace ShipIt.Models
 
         public BetStatus BetStatus { get; set; }
 
-        public ApplicationUser BetCreator { get; set; }
+        public string BetCreatorId { get; set; }
 
         [Required]
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
