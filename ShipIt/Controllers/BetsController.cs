@@ -49,7 +49,16 @@ namespace ShipIt.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction("New", "Bets");
+                var viewModel = new NewBetViewModel
+                {
+                    BetFee = bet.BetFee,
+                    EndTime = bet.EndTime,
+                    User1 = bet.User1,
+                    User1Condition = bet.User1Condition,
+                    User2 = bet.User2,
+                    User2Condition = bet.User2Condition
+                };
+                return RedirectToAction("New", viewModel);
             }
 
             var newBet = new Bet();

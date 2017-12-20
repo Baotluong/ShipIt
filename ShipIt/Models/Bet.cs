@@ -16,6 +16,8 @@ namespace ShipIt.Models
         public DateTime StartDate { get; set; }
 
         [Display(Name = "When will the bet end?")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date, ErrorMessage = "Please enter a valid date.")]
         public DateTime? EndTime { get; set; }
 
         [Required]

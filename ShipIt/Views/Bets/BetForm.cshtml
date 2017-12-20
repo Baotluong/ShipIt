@@ -22,18 +22,22 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Bet.User1)
         @Html.TextBoxFor(m => m.Bet.User1, new { @class = "form-control", @Value = Model.CurrentUserEmail})
+        @Html.ValidationMessageFor(m => m.Bet.User1)
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Bet.User1Condition)
         @Html.TextBoxFor(m => m.Bet.User1Condition, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Bet.User1Condition)
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Bet.User2)
         @Html.TextBoxFor(m => m.Bet.User2, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Bet.User2)
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Bet.User2Condition)
         @Html.TextBoxFor(m => m.Bet.User2Condition, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Bet.User2Condition)
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 }
