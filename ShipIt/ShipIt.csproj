@@ -223,6 +223,10 @@
     <Compile Include="Migrations\201712191608325_ChangedBetCreatorToIdInsteadOfApplicationUser.Designer.cs">
       <DependentUpon>201712191608325_ChangedBetCreatorToIdInsteadOfApplicationUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712201610599_AddedBetPremise.cs" />
+    <Compile Include="Migrations\201712201610599_AddedBetPremise.Designer.cs">
+      <DependentUpon>201712201610599_AddedBetPremise.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bet.cs" />
@@ -326,6 +330,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712191608325_ChangedBetCreatorToIdInsteadOfApplicationUser.resx">
       <DependentUpon>201712191608325_ChangedBetCreatorToIdInsteadOfApplicationUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712201610599_AddedBetPremise.resx">
+      <DependentUpon>201712201610599_AddedBetPremise.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

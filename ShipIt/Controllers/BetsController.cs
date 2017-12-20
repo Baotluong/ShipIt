@@ -35,6 +35,7 @@ namespace ShipIt.Controllers
             string currentUserId = User.Identity.GetUserId();
             string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
 
+            //TODO: why isnt this just NewBetViewModel?
             var viewModel = new BetFormViewModel
             {
                 BetStatus = betStatus,
@@ -56,9 +57,10 @@ namespace ShipIt.Controllers
                     User1 = bet.User1,
                     User1Condition = bet.User1Condition,
                     User2 = bet.User2,
-                    User2Condition = bet.User2Condition
+                    User2Condition = bet.User2Condition,
+                    BetPremise = bet.BetPremise
                 };
-                return RedirectToAction("New", viewModel);
+                return View("New", viewModel);
             }
 
             var newBet = new Bet();
@@ -81,6 +83,7 @@ namespace ShipIt.Controllers
             newBet.BetFee = bet.BetFee;
             newBet.ApplicationUsers = UsersInDb;
             string currentUserId = User.Identity.GetUserId();
+            newBet.BetPremise = bet.BetPremise;
             newBet.BetCreatorId = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Id;
 
             List<Condition> NewBetConditions = new List<Condition>();

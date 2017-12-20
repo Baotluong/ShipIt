@@ -28,6 +28,8 @@ namespace ShipIt.Models
 
         public string BetCreatorId { get; set; }
 
+        public string BetPremise { get; set; }
+
         [Required]
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
 

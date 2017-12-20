@@ -20,6 +20,7 @@ namespace ShipIt.ViewModels
 
         [Required(ErrorMessage = "Please enter a valid wager.")]
         [Display(Name = "Bet Wager")]
+        [Range(0, Double.PositiveInfinity, ErrorMessage = "The wager cannot be negative.")]
         public float BetFee { get; set; }
 
         [Required(ErrorMessage = "Please enter a valid Email Address.")]
@@ -36,10 +37,17 @@ namespace ShipIt.ViewModels
 
         [Required]
         [Display(Name = "Bettor 1 Wins If")]
+        [StringLength(500, ErrorMessage = "This condition exceeds 500 characters.")]
         public string User1Condition { get; set; }
 
         [Required]
         [Display(Name = "Bettor 2 Wins If")]
+        [StringLength(500, ErrorMessage = "This condition exceeds 500 characters.")]
         public string User2Condition { get; set; }
+
+        [Required]
+        [Display(Name = "What's the Bet?")]
+        [StringLength(500, ErrorMessage = "This field exceeds 500 characters.")]
+        public string BetPremise { get; set; }
     }
 }

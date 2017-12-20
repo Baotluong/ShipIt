@@ -10,14 +10,9 @@
 {
     @Html.ValidationSummary(true, "Please fix the following errors.")
     <div class="form-group">
-        @Html.LabelFor(m => m.Bet.EndTime)
-        @Html.TextBoxFor(m => m.Bet.EndTime, "{0:d MMM yyyy}", new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Bet.EndTime)
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Bet.BetFee)
-        @Html.TextBoxFor(m => m.Bet.BetFee, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Bet.BetFee)
+        @Html.LabelFor(m => m.Bet.BetPremise)
+        @Html.TextBoxFor(m => m.Bet.BetPremise, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Bet.BetPremise)
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Bet.User1)
@@ -38,6 +33,16 @@
         @Html.LabelFor(m => m.Bet.User2Condition)
         @Html.TextBoxFor(m => m.Bet.User2Condition, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Bet.User2Condition)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Bet.BetFee)
+        @Html.TextBoxFor(m => m.Bet.BetFee, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Bet.BetFee)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Bet.EndTime)
+        @Html.TextBoxFor(m => m.Bet.EndTime, "{0:d MMM yyyy}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Bet.EndTime)
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 }

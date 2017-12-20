@@ -5,6 +5,7 @@ using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using ShipIt.Models;
 using ShipIt.ViewModels;
+using System.Data.Entity;
 
 namespace ShipIt.Controllers.API
 {
@@ -16,6 +17,19 @@ namespace ShipIt.Controllers.API
         public BetsController()
         {
             _context = new ApplicationDbContext();
+        }
+
+        // GET /api/bets
+        public IHttpActionResult GetBets(string query = null)
+        {
+            var betsQuery = _context.Bets;
+            string currentUserId = User.Identity.GetUserId();
+            string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
+
+            //if (!String.IsNullOrWhiteSpace(query))
+            //    betsQuery = betsQuery.Where(b => b.ApplicationUsers.Contains(currentUserId));
+
+            return Ok(betsQuery);
         }
 
         [HttpPost]

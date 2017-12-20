@@ -1,6 +1,72 @@
-﻿
+﻿@model IEnumerable<ShipIt.Models.Bet>
+
 @{
-    ViewBag.Title = "View";
+    ViewBag.Title = "My Bets";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>View</h2>
+<h2>Bets</h2>
+
+<table id="bets" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Bet</th>
+            <th>Bettor 1</th>
+            <th>Bettor 1 Win Condition</th>
+            <th>Bettor 2</th>
+            <th>Bettor 2 Win Condition</th>
+            <th>Wager</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            var table = $("#bets").DataTable({
+                ajax: {
+                    url: "/api/bets",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "BetPremise",
+                        render: function (data, type, bet) {
+                            return "<a href='/bets/edit/" + bet.id + "'>" + bet + "</a>";
+                        }
+                    },
+                    {
+                        data: "membershipType.name"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<button class='btn-link js-delete' data-customer-id=" + data + ">Delete</button>";
+                        }
+                    }
+                ]
+            });
+
+
+            //$("#customers").on("click", ".js-delete", function () {
+            //    var button = $(this);
+
+            //    bootbox.confirm("Are you sure you want to delete this customer?", function (result) {
+            //        if (result) {
+            //            $.ajax({
+            //                url: "/api/customers/" + button.attr("data-customer-id"),
+            //                method: "DELETE",
+            //                success: function () {
+            //                    table.row(button.parents("tr")).remove().draw();
+            //                }
+            //            });
+            //        }
+            //    });
+            //});
+        });
+    </script>
+}
