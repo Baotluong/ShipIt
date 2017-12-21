@@ -12,7 +12,7 @@ namespace ShipIt.ViewModels
     {
         public IEnumerable<BetStatus> BetStatus { get; set; }
 
-        public NewBetViewModel Bet { get; set; }
+        public NewBetViewModel NewBetViewModel { get; set; }
 
         public string CurrentUserEmail { get; set; }
     }

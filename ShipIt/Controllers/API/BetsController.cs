@@ -22,7 +22,8 @@ namespace ShipIt.Controllers.API
         // GET /api/bets
         public IHttpActionResult GetBets(string query = null)
         {
-            var betsQuery = _context.Bets;
+            //TODO: Doesnt work yet
+            IEnumerable<Bet> betsQuery = _context.Bets;
             string currentUserId = User.Identity.GetUserId();
             string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
 

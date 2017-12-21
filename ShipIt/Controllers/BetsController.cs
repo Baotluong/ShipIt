@@ -46,28 +46,26 @@ namespace ShipIt.Controllers
         }
 
         [HttpPost]
-        public ActionResult Save(NewBetViewModel bet)
+        public ActionResult Save(NewBetViewModel newBetViewModel)
         {
+            string currentUserId = User.Identity.GetUserId();
+            string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
+
             if (!ModelState.IsValid)
             {
-                var viewModel = new NewBetViewModel
+                var viewModel = new BetFormViewModel
                 {
-                    BetFee = bet.BetFee,
-                    EndTime = bet.EndTime,
-                    User1 = bet.User1,
-                    User1Condition = bet.User1Condition,
-                    User2 = bet.User2,
-                    User2Condition = bet.User2Condition,
-                    BetPremise = bet.BetPremise
+                    NewBetViewModel = newBetViewModel,
+                    CurrentUserEmail = currentUserEmail
                 };
-                return View("New", viewModel);
+                return View("BetForm", viewModel);
             }
 
             var newBet = new Bet();
 
             var newBetUserConditions= new List<KeyValuePair<string, string>>() {
-                new KeyValuePair<string, string>(bet.User1, bet.User1Condition),
-                new KeyValuePair<string, string>(bet.User2, bet.User2Condition)
+                new KeyValuePair<string, string>(newBetViewModel.User1, newBetViewModel.User1Condition),
+                new KeyValuePair<string, string>(newBetViewModel.User2, newBetViewModel.User2Condition)
             };
 
             List<ApplicationUser> UsersInDb = new List<ApplicationUser>();
@@ -79,11 +77,10 @@ namespace ShipIt.Controllers
             }
 
             newBet.StartDate = DateTime.Now;
-            newBet.EndTime = bet.EndTime;
-            newBet.BetFee = bet.BetFee;
+            newBet.EndTime = newBetViewModel.EndTime;
+            newBet.BetFee = newBetViewModel.BetFee;
             newBet.ApplicationUsers = UsersInDb;
-            string currentUserId = User.Identity.GetUserId();
-            newBet.BetPremise = bet.BetPremise;
+            newBet.BetPremise = newBetViewModel.BetPremise;
             newBet.BetCreatorId = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Id;
 
             List<Condition> NewBetConditions = new List<Condition>();

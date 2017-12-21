@@ -10,12 +10,9 @@ namespace ShipIt.ViewModels
     public class NewBetViewModel
     {
         [Display(Name = "When does the bet end? (Optional)")]
-        //failed validations. ask bryce
-        //[DisplayFormat(DataFormatString = "{0:MMM dd, yyyy}")]
-        //[Range(typeof(DateTime), , "2004-12-31",
-        //ErrorMessage = "Value for {0} must be between {1} and {2}")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        //[DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Date, ErrorMessage ="Please enter a valid date.")]
+        [ValidEndDate]
         public DateTime? EndTime { get; set; }
 
         [Required(ErrorMessage = "Please enter a valid wager.")]
