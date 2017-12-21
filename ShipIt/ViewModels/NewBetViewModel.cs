@@ -10,6 +10,7 @@ namespace ShipIt.ViewModels
     public class NewBetViewModel
     {
         [Display(Name = "When does the bet end? (Optional)")]
+        //Not sure what this does
         //[DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Date, ErrorMessage ="Please enter a valid date.")]
         [ValidEndDate]

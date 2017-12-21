@@ -23,7 +23,7 @@ namespace ShipIt.Controllers.API
         public IHttpActionResult GetBets(string query = null)
         {
             //TODO: Doesnt work yet
-            IEnumerable<Bet> betsQuery = _context.Bets;
+            IEnumerable<Bet> betsQuery = _context.Bets.ToList();
             string currentUserId = User.Identity.GetUserId();
             string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
 
@@ -31,6 +31,32 @@ namespace ShipIt.Controllers.API
             //    betsQuery = betsQuery.Where(b => b.ApplicationUsers.Contains(currentUserId));
 
             return Ok(betsQuery);
+        }
+
+        // GET /api/bets/1
+        public IHttpActionResult GetBet(string id)
+        {
+            var betInDb = _context.Bets.Where(b => b.Id.ToString() == id).SingleOrDefault();
+            var User1InDb = betInDb.ApplicationUsers.ElementAt(0);
+            var User2InDb = betInDb.ApplicationUsers.ElementAt(1);
+
+            var NewBetViewModel = new NewBetViewModel
+            {
+                BetFee = betInDb.BetFee,
+                BetPremise = betInDb.BetPremise,
+                User1 = User1InDb.Email,
+                User1Condition = betInDb.Conditions.Where(c => c.ApplicationUser == User1InDb).SingleOrDefault().WinCondition,
+                User2 = User2InDb.Email,
+                User2Condition = betInDb.Conditions.Where(c => c.ApplicationUser == User2InDb).SingleOrDefault().WinCondition,
+                EndTime = betInDb.EndTime
+            };
+
+            var BetFormViewModel = new BetFormViewModel
+            {
+                NewBetViewModel = NewBetViewModel,
+            };
+
+            return Ok(BetFormViewModel);
         }
 
         [HttpPost]
