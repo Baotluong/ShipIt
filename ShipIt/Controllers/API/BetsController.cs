@@ -22,13 +22,16 @@ namespace ShipIt.Controllers.API
         // GET /api/bets
         public IHttpActionResult GetBets(string query = null)
         {
-            //TODO: Doesnt work yet
-            IEnumerable<Bet> betsQuery = _context.Bets.ToList();
+            IEnumerable<Bet> betsQuery = _context.Bets
+                .Include(b => b.ApplicationUsers)
+                .Include(b => b.Conditions)
+                .ToList();
+
             string currentUserId = User.Identity.GetUserId();
             string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
 
             //if (!String.IsNullOrWhiteSpace(query))
-            //    betsQuery = betsQuery.Where(b => b.ApplicationUsers.Contains(currentUserId));
+            betsQuery = betsQuery.Where(b => b.ApplicationUsers.SingleOrDefault().Id == currentUserId);
 
             return Ok(betsQuery);
         }
