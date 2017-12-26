@@ -1,0 +1,19 @@
+﻿@model ShipIt.ViewModels.BetFormViewModel
+    
+@{
+    ViewBag.Title = @Model.NewBetViewModel.BetPremise;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.NewBetViewModel.BetPremise</h2>
+<ul>
+    <li>Wager: @Model.NewBetViewModel.BetFee</li>
+    @if (Model.NewBetViewModel.EndTime != null)
+    {
+        <li>End Date: @Model.NewBetViewModel.EndTime</li>
+    }
+    <li>Bettor 1: @Model.NewBetViewModel.User1</li>
+    <li>Bettor 1 Wins If: @Model.NewBetViewModel.User1Condition</li>
+    <li>Bettor 2: @Model.NewBetViewModel.User2</li>
+    <li>Bettor 2 Wins If: @Model.NewBetViewModel.User2Condition</li>
+</ul>

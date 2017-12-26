@@ -30,8 +30,10 @@ namespace ShipIt.Controllers.API
             string currentUserId = User.Identity.GetUserId();
             string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
 
+            IEnumerable<ApplicationUser> usersBets = _context.Users.Where(u => u.Id == currentUserId).ToList();
+
             //if (!String.IsNullOrWhiteSpace(query))
-            betsQuery = betsQuery.Where(b => b.ApplicationUsers.SingleOrDefault().Id == currentUserId);
+            //betsQuery = betsQuery.Where(b => b.ApplicationUsers.ToDictionary(id)
 
             return Ok(betsQuery);
         }

@@ -6,6 +6,10 @@ using ShipIt.Models;
 using ShipIt.ViewModels;
 using System.Web.Security;
 using Microsoft.AspNet.Identity;
+using System.Data.Entity;
+using System.Net.Mail;
+using System.Net;
+using System.IO;
 
 namespace ShipIt.Controllers
 {
@@ -29,6 +33,41 @@ namespace ShipIt.Controllers
             return View();
         }
 
+        public ActionResult Details(string id)
+        {
+            var bet = _context.Bets
+                .Include(b => b.ApplicationUsers)
+                .Include(b => b.Conditions)
+                .SingleOrDefault(b => b.Id.ToString() == id);
+
+            if (bet == null)
+            {
+                return HttpNotFound();
+            }
+
+            var betInDb = _context.Bets.Where(b => b.Id.ToString() == id).SingleOrDefault();
+            var User1InDb = betInDb.ApplicationUsers.ElementAt(0);
+            var User2InDb = betInDb.ApplicationUsers.ElementAt(1);
+
+            var NewBetViewModel = new NewBetViewModel
+            {
+                BetFee = betInDb.BetFee,
+                BetPremise = betInDb.BetPremise,
+                User1 = User1InDb.Email,
+                User1Condition = betInDb.Conditions.Where(c => c.ApplicationUser == User1InDb).SingleOrDefault().WinCondition,
+                User2 = User2InDb.Email,
+                User2Condition = betInDb.Conditions.Where(c => c.ApplicationUser == User2InDb).SingleOrDefault().WinCondition,
+                EndTime = betInDb.EndTime
+            };
+
+            var BetFormViewModel = new BetFormViewModel
+            {
+                NewBetViewModel = NewBetViewModel,
+            };
+
+            return View(BetFormViewModel);
+        }
+
         public ActionResult New()
         {
             var betStatus = _context.BetStatuses.ToList();
@@ -41,7 +80,6 @@ namespace ShipIt.Controllers
                 BetStatus = betStatus,
                 CurrentUserEmail = currentUserEmail
             };
-
             return View("BetForm", viewModel);
         }
 
@@ -100,6 +138,42 @@ namespace ShipIt.Controllers
 
             _context.Bets.Add(newBet);
             _context.SaveChanges();
+
+            return RedirectToAction("Index", "Bets");
+        }
+
+        public ActionResult SendEmail(object sender, EventArgs e)
+        {
+            SmtpClient client = new SmtpClient();
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.EnableSsl = true;
+            client.Host = "smtp.gmail.com";
+            client.Port = 587;
+
+            // setup Smtp authentication
+            System.Net.NetworkCredential credentials =
+                new System.Net.NetworkCredential("baotluong@gmail.com", "password");
+            client.UseDefaultCredentials = false;
+            client.Credentials = credentials;
+
+            MailMessage msg = new MailMessage();
+            msg.From = new MailAddress("baotluong@gmail.com");
+            msg.To.Add(new MailAddress("baotluong@gmail.com"));
+
+            msg.Subject = "This is a test Email subject";
+            msg.IsBodyHtml = true;
+            msg.Body = string.Format("<html><head></head><body><b>Test HTML Email</b></body>");
+
+            try
+            {
+                client.Send(msg);
+                //lblMsg.Text = "Your message has been successfully sent.";
+            }
+            catch (Exception ex)
+            {
+                //lblMsg.ForeColor = Color.Red;
+                //lblMsg.Text = "Error occured while sending your message." + ex.Message;
+            }
 
             return RedirectToAction("Index", "Bets");
         }
