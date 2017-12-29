@@ -4,12 +4,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ShipIt.Models;
 using ShipIt.ViewModels;
-using System.Web.Security;
 using Microsoft.AspNet.Identity;
 using System.Data.Entity;
 using System.Net.Mail;
-using System.Net;
-using System.IO;
 
 namespace ShipIt.Controllers
 {

@@ -20,22 +20,29 @@ namespace ShipIt.Controllers.API
         }
 
         // GET /api/bets
-        public IHttpActionResult GetBets(string query = null)
+        [HttpGet]
+        [Route("api/mybets")]
+        public IHttpActionResult GetMyBets(string query = null)
         {
-            IEnumerable<Bet> betsQuery = _context.Bets
-                .Include(b => b.ApplicationUsers)
-                .Include(b => b.Conditions)
-                .ToList();
-
             string currentUserId = User.Identity.GetUserId();
-            string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
 
-            IEnumerable<ApplicationUser> usersBets = _context.Users.Where(u => u.Id == currentUserId).ToList();
+            ApplicationUser currentUser = _context.Users.First(u => u.Id == currentUserId);
 
-            //if (!String.IsNullOrWhiteSpace(query))
-            //betsQuery = betsQuery.Where(b => b.ApplicationUsers.ToDictionary(id)
+            return Ok(currentUser.Bets.Select(b => {
+                var User1InDb = b.ApplicationUsers.ElementAt(0);
+                var User2InDb = b.ApplicationUsers.ElementAt(1);
 
-            return Ok(betsQuery);
+                return new NewBetViewModel()
+                {
+                    BetFee = b.BetFee,
+                    BetPremise = b.BetPremise,
+                    User1 = User1InDb.Email,
+                    User1Condition = b.Conditions.First(c => c.ApplicationUser == User1InDb).WinCondition,
+                    User2 = User2InDb.Email,
+                    User2Condition = b.Conditions.First(c => c.ApplicationUser == User2InDb).WinCondition,
+                    EndTime = b.EndTime
+                };
+            }));
         }
 
         // GET /api/bets/1
