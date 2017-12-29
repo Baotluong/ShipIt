@@ -30,6 +30,11 @@ namespace ShipIt.Controllers
             return View();
         }
 
+        public ActionResult MyBets()
+        {
+            return View();
+        }
+
         public ActionResult Details(string id)
         {
             var bet = _context.Bets

@@ -32,7 +32,7 @@ namespace ShipIt.Controllers.API
                 var User1InDb = b.ApplicationUsers.ElementAt(0);
                 var User2InDb = b.ApplicationUsers.ElementAt(1);
 
-                return new NewBetViewModel()
+                return new MyBetsViewModel()
                 {
                     BetFee = b.BetFee,
                     BetPremise = b.BetPremise,
@@ -40,7 +40,9 @@ namespace ShipIt.Controllers.API
                     User1Condition = b.Conditions.First(c => c.ApplicationUser == User1InDb).WinCondition,
                     User2 = User2InDb.Email,
                     User2Condition = b.Conditions.First(c => c.ApplicationUser == User2InDb).WinCondition,
-                    EndTime = b.EndTime
+                    EndDate = b.EndTime,
+                    StartDate = b.StartDate,
+                    BetId = b.Id.ToString()
                 };
             }));
         }

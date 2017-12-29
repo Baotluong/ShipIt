@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Bets</h2>
+<h2>Bets NEEDS TO BE FIXED COMPLETELY</h2>
 
 <table id="bets" class="table table-bordered table-hover">
     <thead>
@@ -29,18 +29,18 @@
         $(document).ready(function () {
             var table = $("#bets").DataTable({
                 ajax: {
-                    url: "/api/bets",
+                    url: "/api/mybets",
                     dataSrc: ""
                 },
                 columns: [
                     {
                         data: "BetPremise",
                         render: function (data, type, bet) {
-                            return "<a href='/bets/edit/" + bet.id + "'>" + bet + "</a>";
+                            return "<a href='/bets/" + bet.id + "'>" + bet + "</a>";
                         }
                     },
                     {
-                        data: "membershipType.name"
+                        data: "User1"
                     },
                     {
                         data: "id",
