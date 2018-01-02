@@ -28,5 +28,7 @@ namespace ShipIt.ViewModels
         public string User2Condition { get; set; }
 
         public string BetPremise { get; set; }
+
+        public string BetStatus { get; set; }
     }
 }

@@ -42,7 +42,9 @@ namespace ShipIt.Controllers.API
                     User2Condition = b.Conditions.First(c => c.ApplicationUser == User2InDb).WinCondition,
                     EndDate = b.EndTime,
                     StartDate = b.StartDate,
-                    BetId = b.Id.ToString()
+                    BetId = b.Id.ToString(),
+                    //This needs to be fixed. Not sure how to grab the bet status name.
+                    //BetStatus = b.BetStatus.StatusName.First(s => s.)
                 };
             }));
         }

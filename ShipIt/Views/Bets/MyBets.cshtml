@@ -10,6 +10,7 @@
 <table id="bets" class="table table-bordered table-hover">
     <thead>
         <tr>
+            <th>Status</th>
             <th>Bet</th>
             <th>Wager</th>
             <th>Bettor 1</th>
@@ -33,6 +34,9 @@
                     dataSrc: ""
                 },
                 columns: [
+                    {
+                        data: "BetStatus"
+                    },
                     {
                         data: "BetPremise",
                         render: function (data, type, bet) {
