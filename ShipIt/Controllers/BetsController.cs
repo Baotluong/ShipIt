@@ -117,6 +117,7 @@ namespace ShipIt.Controllers
             }
 
             newBet.StartDate = DateTime.Now;
+            newBet.BetStatusId = 1;
             newBet.EndTime = newBetViewModel.EndTime;
             newBet.BetFee = newBetViewModel.BetFee;
             newBet.ApplicationUsers = UsersInDb;
