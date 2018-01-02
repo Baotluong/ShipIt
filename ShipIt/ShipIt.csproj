@@ -235,6 +235,10 @@
     <Compile Include="Migrations\201801021558064_PopulateBetStatus.Designer.cs">
       <DependentUpon>201801021558064_PopulateBetStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801021653014_AddedBetStatusIdToBetModel.cs" />
+    <Compile Include="Migrations\201801021653014_AddedBetStatusIdToBetModel.Designer.cs">
+      <DependentUpon>201801021653014_AddedBetStatusIdToBetModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bet.cs" />
@@ -586,6 +590,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801021558064_PopulateBetStatus.resx">
       <DependentUpon>201801021558064_PopulateBetStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801021653014_AddedBetStatusIdToBetModel.resx">
+      <DependentUpon>201801021653014_AddedBetStatusIdToBetModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

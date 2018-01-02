@@ -19,6 +19,8 @@ namespace ShipIt.Models
 
         public float BetFee { get; set; }
 
+        public int BetStatusId { get; set; }
+
         public BetStatus BetStatus { get; set; }
 
         public string BetCreatorId { get; set; }

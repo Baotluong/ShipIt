@@ -19,7 +19,7 @@ namespace ShipIt.Controllers.API
             _context = new ApplicationDbContext();
         }
 
-        // GET /api/bets
+        // GET /api/mybets
         [HttpGet]
         [Route("api/mybets")]
         public IHttpActionResult GetMyBets(string query = null)
@@ -32,6 +32,8 @@ namespace ShipIt.Controllers.API
                 var User1InDb = b.ApplicationUsers.ElementAt(0);
                 var User2InDb = b.ApplicationUsers.ElementAt(1);
 
+                var betStatus = _context.BetStatuses.First(s => s.Id == b.BetStatusId).StatusName;
+
                 return new MyBetsViewModel()
                 {
                     BetFee = b.BetFee,
@@ -43,8 +45,8 @@ namespace ShipIt.Controllers.API
                     EndDate = b.EndTime,
                     StartDate = b.StartDate,
                     BetId = b.Id.ToString(),
-                    //This needs to be fixed. Not sure how to grab the bet status name.
-                    //BetStatus = b.BetStatus.StatusName.First(s => s.)
+                    //This seems really hacky. Ask Bryce if there is a cleaner way.
+                    BetStatus = betStatus
                 };
             }));
         }
