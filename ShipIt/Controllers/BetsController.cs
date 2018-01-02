@@ -141,7 +141,7 @@ namespace ShipIt.Controllers
             _context.Bets.Add(newBet);
             _context.SaveChanges();
 
-            return RedirectToAction("Index", "Bets");
+            return RedirectToAction("MyBets", "Bets");
         }
 
         public ActionResult SendEmail(object sender, EventArgs e)

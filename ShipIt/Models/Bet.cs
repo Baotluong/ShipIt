@@ -15,13 +15,8 @@ namespace ShipIt.Models
 
         public DateTime StartDate { get; set; }
 
-        [Display(Name = "When will the bet end?")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
-        [DataType(DataType.Date, ErrorMessage = "Please enter a valid date.")]
         public DateTime? EndTime { get; set; }
 
-        [Required]
-        [Display(Name = "Bet Amount")]
         public float BetFee { get; set; }
 
         public BetStatus BetStatus { get; set; }
@@ -30,10 +25,8 @@ namespace ShipIt.Models
 
         public string BetPremise { get; set; }
 
-        [Required]
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
 
-        [Required]
         public virtual ICollection<Condition> Conditions { get; set; }
 
     }

@@ -227,6 +227,14 @@
     <Compile Include="Migrations\201712201610599_AddedBetPremise.Designer.cs">
       <DependentUpon>201712201610599_AddedBetPremise.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801021553386_AddedBetStatusToConditions.cs" />
+    <Compile Include="Migrations\201801021553386_AddedBetStatusToConditions.Designer.cs">
+      <DependentUpon>201801021553386_AddedBetStatusToConditions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801021558064_PopulateBetStatus.cs" />
+    <Compile Include="Migrations\201801021558064_PopulateBetStatus.Designer.cs">
+      <DependentUpon>201801021558064_PopulateBetStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bet.cs" />
@@ -572,6 +580,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712201610599_AddedBetPremise.resx">
       <DependentUpon>201712201610599_AddedBetPremise.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801021553386_AddedBetStatusToConditions.resx">
+      <DependentUpon>201801021553386_AddedBetStatusToConditions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801021558064_PopulateBetStatus.resx">
+      <DependentUpon>201801021558064_PopulateBetStatus.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

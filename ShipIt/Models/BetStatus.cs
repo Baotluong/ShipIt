@@ -11,12 +11,12 @@ namespace ShipIt.Models
 
         public string StatusName { get; set; }
 
-        public static readonly byte Proposed = 0;
+        public static readonly byte Proposed = 1;
 
-        public static readonly byte InProgress = 1;
+        public static readonly byte InProgress = 2;
 
-        public static readonly byte Completed = 2;
+        public static readonly byte Completed = 3;
 
-        public static readonly byte Paid = 3;
+        public static readonly byte Paid = 4;
     }
 }
