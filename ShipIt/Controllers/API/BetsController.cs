@@ -32,7 +32,7 @@ namespace ShipIt.Controllers.API
                 var User1InDb = b.ApplicationUsers.ElementAt(0);
                 var User2InDb = b.ApplicationUsers.ElementAt(1);
 
-                var betStatus = _context.BetStatuses.First(s => s.Id == b.BetStatusId).StatusName;
+                var betStatusInDb = _context.BetStatuses.First(s => s.Id == b.BetStatusId).StatusName;
 
                 return new MyBetsViewModel()
                 {
@@ -46,7 +46,7 @@ namespace ShipIt.Controllers.API
                     StartDate = b.StartDate,
                     BetId = b.Id.ToString(),
                     //This seems really hacky. Ask Bryce if there is a cleaner way.
-                    BetStatus = betStatus
+                    BetStatus = betStatusInDb
                 };
             }));
         }

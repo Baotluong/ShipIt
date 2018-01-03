@@ -1,4 +1,4 @@
-﻿@model ShipIt.ViewModels.BetFormViewModel
+﻿@model ShipIt.ViewModels.NewBetViewModel
 
 @{
     ViewBag.Title = "BetForm";
@@ -10,39 +10,39 @@
 {
     @Html.ValidationSummary(true, "Please fix the following errors.")
     <div class="form-group">
-        @Html.LabelFor(m => m.NewBetViewModel.BetPremise)
-        @Html.TextBoxFor(m => m.NewBetViewModel.BetPremise, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.NewBetViewModel.BetPremise)
+        @Html.LabelFor(m => m.BetPremise)
+        @Html.TextBoxFor(m => m.BetPremise, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.BetPremise)
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.NewBetViewModel.User1)
-        @Html.TextBoxFor(m => m.NewBetViewModel.User1, new { @class = "form-control", @Value = Model.CurrentUserEmail})
-        @Html.ValidationMessageFor(m => m.NewBetViewModel.User1)
+        @Html.LabelFor(m => m.User1)
+        @Html.TextBoxFor(m => m.User1, new { @class = "form-control", @Value = Model.CurrentUserEmail})
+        @Html.ValidationMessageFor(m => m.User1)
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.NewBetViewModel.User1Condition)
-        @Html.TextBoxFor(m => m.NewBetViewModel.User1Condition, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.NewBetViewModel.User1Condition)
+        @Html.LabelFor(m => m.User1Condition)
+        @Html.TextBoxFor(m => m.User1Condition, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.User1Condition)
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.NewBetViewModel.User2)
-        @Html.TextBoxFor(m => m.NewBetViewModel.User2, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.NewBetViewModel.User2)
+        @Html.LabelFor(m => m.User2)
+        @Html.TextBoxFor(m => m.User2, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.User2)
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.NewBetViewModel.User2Condition)
-        @Html.TextBoxFor(m => m.NewBetViewModel.User2Condition, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.NewBetViewModel.User2Condition)
+        @Html.LabelFor(m => m.User2Condition)
+        @Html.TextBoxFor(m => m.User2Condition, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.User2Condition)
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.NewBetViewModel.BetFee)
-        @Html.TextBoxFor(m => m.NewBetViewModel.BetFee, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.NewBetViewModel.BetFee)
+        @Html.LabelFor(m => m.BetFee)
+        @Html.TextBoxFor(m => m.BetFee, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.BetFee)
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.NewBetViewModel.EndTime)
-        @Html.TextBoxFor(m => m.NewBetViewModel.EndTime, "{0:d MMM yyyy}", new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.NewBetViewModel.EndTime)
+        @Html.LabelFor(m => m.EndTime)
+        @Html.TextBoxFor(m => m.EndTime, "{0:d MMM yyyy}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.EndTime)
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 }

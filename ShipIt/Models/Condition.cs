@@ -19,6 +19,8 @@ namespace ShipIt.Models
 
         public ApplicationUser ApplicationUser { get; set; }
 
+        public int BetStatusId { get; set; }
+
         public BetStatus BetStatus { get; set; }
     }
 }

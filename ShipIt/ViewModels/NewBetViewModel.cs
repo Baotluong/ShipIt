@@ -44,5 +44,9 @@ namespace ShipIt.ViewModels
         [Display(Name = "What's the Bet?")]
         [StringLength(500, ErrorMessage = "This field exceeds 500 characters.")]
         public string BetPremise { get; set; }
+
+        public string CurrentUserEmail { get; set; }
+
+        public BetStatus BetStatus { get; set; }
     }
 }

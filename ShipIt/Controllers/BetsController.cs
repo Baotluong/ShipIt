@@ -62,26 +62,20 @@ namespace ShipIt.Controllers
                 EndTime = betInDb.EndTime
             };
 
-            var BetFormViewModel = new BetFormViewModel
-            {
-                NewBetViewModel = NewBetViewModel,
-            };
-
-            return View(BetFormViewModel);
+            return View(NewBetViewModel);
         }
 
         public ActionResult New()
         {
-            var betStatus = _context.BetStatuses.ToList();
             string currentUserId = User.Identity.GetUserId();
-            string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
+            ApplicationUser currentUser = _context.Users.First(u => u.Id == currentUserId);
 
             //TODO: why isnt this just NewBetViewModel?
-            var viewModel = new BetFormViewModel
+            var viewModel = new NewBetViewModel
             {
-                BetStatus = betStatus,
-                CurrentUserEmail = currentUserEmail
+                CurrentUserEmail = currentUser.Email
             };
+
             return View("BetForm", viewModel);
         }
 
@@ -93,9 +87,8 @@ namespace ShipIt.Controllers
 
             if (!ModelState.IsValid)
             {
-                var viewModel = new BetFormViewModel
+                var viewModel = new NewBetViewModel
                 {
-                    NewBetViewModel = newBetViewModel,
                     CurrentUserEmail = currentUserEmail
                 };
                 return View("BetForm", viewModel);
@@ -133,7 +126,7 @@ namespace ShipIt.Controllers
                 {
                     WinCondition = userConditions.Value,
                     Bet = newBet,
-                    ApplicationUser = UserinDb
+                    ApplicationUser = UserinDb,
                 };
                 NewBetConditions.Add(newCondition);
             }
