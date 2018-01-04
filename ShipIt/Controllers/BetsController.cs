@@ -127,6 +127,7 @@ namespace ShipIt.Controllers
                     WinCondition = userConditions.Value,
                     Bet = newBet,
                     ApplicationUser = UserinDb,
+                    BetStatusId = BetStatus.Proposed
                 };
                 NewBetConditions.Add(newCondition);
             }

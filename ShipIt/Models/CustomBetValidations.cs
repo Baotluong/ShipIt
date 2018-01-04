@@ -10,7 +10,7 @@ namespace ShipIt.Models
         {
             DateTime date = Convert.ToDateTime(value);
 
-            return (date >= DateTime.Now.AddDays(-1))
+            return (value == null || date >= DateTime.Now.AddDays(-1))
                 ? ValidationResult.Success
                 : new ValidationResult("End Date must be in the future.");
         }
