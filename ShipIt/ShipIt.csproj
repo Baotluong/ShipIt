@@ -231,10 +231,6 @@
     <Compile Include="Migrations\201801021553386_AddedBetStatusToConditions.Designer.cs">
       <DependentUpon>201801021553386_AddedBetStatusToConditions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201801021558064_PopulateBetStatus.cs" />
-    <Compile Include="Migrations\201801021558064_PopulateBetStatus.Designer.cs">
-      <DependentUpon>201801021558064_PopulateBetStatus.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201801021653014_AddedBetStatusIdToBetModel.cs" />
     <Compile Include="Migrations\201801021653014_AddedBetStatusIdToBetModel.Designer.cs">
       <DependentUpon>201801021653014_AddedBetStatusIdToBetModel.cs</DependentUpon>
@@ -242,6 +238,10 @@
     <Compile Include="Migrations\201801031614446_AddedBetStatusIdToCondition.cs" />
     <Compile Include="Migrations\201801031614446_AddedBetStatusIdToCondition.Designer.cs">
       <DependentUpon>201801031614446_AddedBetStatusIdToCondition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801050210003_ChangedBetStatusToEnum.cs" />
+    <Compile Include="Migrations\201801050210003_ChangedBetStatusToEnum.Designer.cs">
+      <DependentUpon>201801050210003_ChangedBetStatusToEnum.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -253,6 +253,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utilities\CustomDateTimeConverter.cs" />
     <Compile Include="ViewModels\BetFormViewModel.cs" />
     <Compile Include="ViewModels\MyBetsViewModel.cs" />
     <Compile Include="ViewModels\NewBetViewModel.cs" />
@@ -592,14 +593,14 @@
     <EmbeddedResource Include="Migrations\201801021553386_AddedBetStatusToConditions.resx">
       <DependentUpon>201801021553386_AddedBetStatusToConditions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201801021558064_PopulateBetStatus.resx">
-      <DependentUpon>201801021558064_PopulateBetStatus.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801021653014_AddedBetStatusIdToBetModel.resx">
       <DependentUpon>201801021653014_AddedBetStatusIdToBetModel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801031614446_AddedBetStatusIdToCondition.resx">
       <DependentUpon>201801031614446_AddedBetStatusIdToCondition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801050210003_ChangedBetStatusToEnum.resx">
+      <DependentUpon>201801050210003_ChangedBetStatusToEnum.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

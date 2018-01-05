@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
@@ -31,8 +30,6 @@ namespace ShipIt.Controllers.API
                 var User1InDb = b.ApplicationUsers.ElementAt(0);
                 var User2InDb = b.ApplicationUsers.ElementAt(1);
 
-                var betStatusInDb = _context.BetStatuses.First(s => s.Id == b.BetStatusId).StatusName;
-
                 return new MyBetsViewModel()
                 {
                     BetFee = b.BetFee,
@@ -44,8 +41,7 @@ namespace ShipIt.Controllers.API
                     EndDate = b.EndTime,
                     StartDate = b.StartDate,
                     BetId = b.Id.ToString(),
-                    //This seems really hacky. Ask Bryce if there is a cleaner way.
-                    BetStatus = betStatusInDb
+                    BetStatus = Enum.GetName(typeof(BetStatus), b.BetStatus)
                 };
             }));
         }

@@ -7,13 +7,13 @@ namespace ShipIt.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class PopulateBetStatus : IMigrationMetadata
+    public sealed partial class ChangedBetStatusToEnum : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(PopulateBetStatus));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ChangedBetStatusToEnum));
         
         string IMigrationMetadata.Id
         {
-            get { return "201801021558064_PopulateBetStatus"; }
+            get { return "201801050210003_ChangedBetStatusToEnum"; }
         }
         
         string IMigrationMetadata.Source

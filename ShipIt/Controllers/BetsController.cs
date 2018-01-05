@@ -110,7 +110,7 @@ namespace ShipIt.Controllers
             }
 
             newBet.StartDate = DateTime.Now;
-            newBet.BetStatusId = 1;
+            newBet.BetStatus = BetStatus.Proposed;
             newBet.EndTime = newBetViewModel.EndTime;
             newBet.BetFee = newBetViewModel.BetFee;
             newBet.ApplicationUsers = UsersInDb;
@@ -127,7 +127,7 @@ namespace ShipIt.Controllers
                     WinCondition = userConditions.Value,
                     Bet = newBet,
                     ApplicationUser = UserinDb,
-                    BetStatusId = BetStatus.Proposed
+                    BetStatus = BetStatus.Proposed
                 };
                 NewBetConditions.Add(newCondition);
             }
@@ -149,12 +149,12 @@ namespace ShipIt.Controllers
 
             // setup Smtp authentication
             System.Net.NetworkCredential credentials =
-                new System.Net.NetworkCredential("baotluong@gmail.com", "password");
+                new System.Net.NetworkCredential("baosapp@gmail.com", "baostestpw");
             client.UseDefaultCredentials = false;
             client.Credentials = credentials;
 
             MailMessage msg = new MailMessage();
-            msg.From = new MailAddress("baotluong@gmail.com");
+            msg.From = new MailAddress("baosapp@gmail.com");
             msg.To.Add(new MailAddress("baotluong@gmail.com"));
 
             msg.Subject = "This is a test Email subject";
@@ -172,7 +172,7 @@ namespace ShipIt.Controllers
                 //lblMsg.Text = "Error occured while sending your message." + ex.Message;
             }
 
-            return RedirectToAction("Index", "Bets");
+            return RedirectToAction("MyBets", "Bets");
         }
     }
 }

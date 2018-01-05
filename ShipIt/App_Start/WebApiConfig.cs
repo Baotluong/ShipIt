@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Xml;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
+using ShipIt.Utilities;
 
 namespace ShipIt
 {
@@ -13,8 +14,12 @@ namespace ShipIt
     {
         public static void Register(HttpConfiguration config)
         {
-            //why did this fix the problem??
             var json = config.Formatters.JsonFormatter;
+            json.SerializerSettings.Converters = new List<JsonConverter>
+            {
+                new CustomDateTimeConverter()
+            };
+
             json.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
             config.Formatters.Remove(config.Formatters.XmlFormatter);
 
