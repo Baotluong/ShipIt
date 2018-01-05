@@ -149,7 +149,8 @@ namespace ShipIt.Controllers
 
             // setup Smtp authentication
             System.Net.NetworkCredential credentials =
-                new System.Net.NetworkCredential("baosapp@gmail.com", "baostestpw");
+                new System.Net.NetworkCredential(System.Web.Configuration.WebConfigurationManager.AppSettings["EmailUserName"],
+                System.Web.Configuration.WebConfigurationManager.AppSettings["EmailPassword"]);
             client.UseDefaultCredentials = false;
             client.Credentials = credentials;
 
