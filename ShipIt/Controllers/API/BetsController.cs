@@ -27,17 +27,17 @@ namespace ShipIt.Controllers.API
             ApplicationUser currentUser = _context.Users.First(u => u.Id == currentUserId);
 
             return Ok(currentUser.Bets.Select(b => {
-                var User1InDb = b.ApplicationUsers.ElementAt(0);
-                var User2InDb = b.ApplicationUsers.ElementAt(1);
+                var User1InDb = b.ApplicationUsers.ElementAtOrDefault(0);
+                var User2InDb = b.ApplicationUsers.ElementAtOrDefault(1);
 
                 return new MyBetsViewModel()
                 {
                     BetFee = b.BetFee,
                     BetPremise = b.BetPremise,
-                    User1 = User1InDb.Email,
-                    User1Condition = b.Conditions.First(c => c.ApplicationUser == User1InDb).WinCondition,
-                    User2 = User2InDb.Email,
-                    User2Condition = b.Conditions.First(c => c.ApplicationUser == User2InDb).WinCondition,
+                    User1 = (User1InDb == null) ? "" : User1InDb.Email,
+                    User1Condition = b.Conditions.FirstOrDefault(c => c.ApplicationUser == User1InDb).WinCondition,
+                    User2 = (User2InDb == null) ? "" : User2InDb.Email,
+                    User2Condition = b.Conditions.FirstOrDefault(c => c.ApplicationUser == User2InDb).WinCondition,
                     EndDate = b.EndTime,
                     StartDate = b.StartDate,
                     BetId = b.Id.ToString(),
@@ -50,17 +50,17 @@ namespace ShipIt.Controllers.API
         public IHttpActionResult GetBet(string id)
         {
             var betInDb = _context.Bets.Where(b => b.Id.ToString() == id).SingleOrDefault();
-            var User1InDb = betInDb.ApplicationUsers.ElementAt(0);
-            var User2InDb = betInDb.ApplicationUsers.ElementAt(1);
+            var User1InDb = betInDb.ApplicationUsers.ElementAtOrDefault(0);
+            var User2InDb = betInDb.ApplicationUsers.ElementAtOrDefault(1);
 
             //TODO: Change this ViewModel
             var NewBetViewModel = new NewBetViewModel
             {
                 BetFee = betInDb.BetFee,
                 BetPremise = betInDb.BetPremise,
-                User1 = User1InDb.Email,
+                User1 = (User1InDb == null) ? "" : User1InDb.Email,
                 User1Condition = betInDb.Conditions.Where(c => c.ApplicationUser == User1InDb).SingleOrDefault().WinCondition,
-                User2 = User2InDb.Email,
+                User2 = (User2InDb == null) ? "" : User2InDb.Email,
                 User2Condition = betInDb.Conditions.Where(c => c.ApplicationUser == User2InDb).SingleOrDefault().WinCondition,
                 EndTime = betInDb.EndTime
             };

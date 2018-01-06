@@ -48,16 +48,16 @@ namespace ShipIt.Controllers
             }
 
             var betInDb = _context.Bets.Where(b => b.Id.ToString() == id).SingleOrDefault();
-            var User1InDb = betInDb.ApplicationUsers.ElementAt(0);
-            var User2InDb = betInDb.ApplicationUsers.ElementAt(1);
+            var User1InDb = betInDb.ApplicationUsers.ElementAtOrDefault(0);
+            var User2InDb = betInDb.ApplicationUsers.ElementAtOrDefault(1);
 
             var NewBetViewModel = new NewBetViewModel
             {
                 BetFee = betInDb.BetFee,
                 BetPremise = betInDb.BetPremise,
-                User1 = User1InDb.Email,
+                User1 = (User1InDb == null) ? "" : User1InDb.Email,
                 User1Condition = betInDb.Conditions.Where(c => c.ApplicationUser == User1InDb).SingleOrDefault().WinCondition,
-                User2 = User2InDb.Email,
+                User2 = (User2InDb == null) ? "" : User2InDb.Email,
                 User2Condition = betInDb.Conditions.Where(c => c.ApplicationUser == User2InDb).SingleOrDefault().WinCondition,
                 EndTime = betInDb.EndTime
             };
