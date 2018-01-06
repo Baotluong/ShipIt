@@ -17,7 +17,10 @@ namespace ShipIt.Models
 
         public Bet Bet { get; set; }
 
-        public ApplicationUser ApplicationUser { get; set; }
+        //TODO: figure out if you really need Application User here and that you have email in two locations
+        //public ApplicationUser? ApplicationUser { get; set; }
+
+        public string UserEmail { get; set; }
 
         public BetStatus BetStatus { get; set; }
     }

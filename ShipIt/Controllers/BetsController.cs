@@ -43,26 +43,25 @@ namespace ShipIt.Controllers
                 .SingleOrDefault(b => b.Id.ToString() == id);
 
             if (bet == null)
-            {
                 return HttpNotFound();
-            }
 
             var betInDb = _context.Bets.Where(b => b.Id.ToString() == id).SingleOrDefault();
-            var User1InDb = betInDb.ApplicationUsers.ElementAtOrDefault(0);
-            var User2InDb = betInDb.ApplicationUsers.ElementAtOrDefault(1);
+            var User1InDb = betInDb.Conditions.ElementAt(0);
+            var User2InDb = betInDb.Conditions.ElementAt(1);
 
-            var NewBetViewModel = new NewBetViewModel
+            var MyBetsViewModel = new MyBetsViewModel
             {
                 BetFee = betInDb.BetFee,
                 BetPremise = betInDb.BetPremise,
-                User1 = (User1InDb == null) ? "" : User1InDb.Email,
-                User1Condition = betInDb.Conditions.Where(c => c.ApplicationUser == User1InDb).SingleOrDefault().WinCondition,
-                User2 = (User2InDb == null) ? "" : User2InDb.Email,
-                User2Condition = betInDb.Conditions.Where(c => c.ApplicationUser == User2InDb).SingleOrDefault().WinCondition,
-                EndTime = betInDb.EndTime
+                User1 = User1InDb.UserEmail,
+                User1Condition = User1InDb.WinCondition,
+                User2 = User2InDb.UserEmail,
+                User2Condition = User2InDb.WinCondition,
+                EndDate = betInDb.EndTime,
+                BetStatus = Enum.GetName(typeof(BetStatus), betInDb.BetStatus)
             };
 
-            return View(NewBetViewModel);
+            return View(MyBetsViewModel);
         }
 
         public ActionResult New()
@@ -83,13 +82,12 @@ namespace ShipIt.Controllers
         public ActionResult Save(NewBetViewModel newBetViewModel)
         {
             string currentUserId = User.Identity.GetUserId();
-            string currentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email;
 
             if (!ModelState.IsValid)
             {
                 var viewModel = new NewBetViewModel
                 {
-                    CurrentUserEmail = currentUserEmail
+                    CurrentUserEmail = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Email
                 };
                 return View("BetForm", viewModel);
             }
@@ -102,11 +100,26 @@ namespace ShipIt.Controllers
             };
 
             List<ApplicationUser> UsersInDb = new List<ApplicationUser>();
+            List<Condition> NewBetConditions = new List<Condition>();
+
             foreach (KeyValuePair<string, string> userConditions in newBetUserConditions)
             {
                 var UserinDb = _context.Users
                     .Where(u => u.Email == userConditions.Key).SingleOrDefault();
-                UsersInDb.Add(UserinDb);
+
+                if (UserinDb != null)
+                    UsersInDb.Add(UserinDb);
+
+                var newCondition = new Condition()
+                {
+                    WinCondition = userConditions.Value,
+                    Bet = newBet,
+                    //Another Hack. Talk to Bryce
+                    //ApplicationUser = (UserinDb == null) ? null : UserinDb,
+                    UserEmail = userConditions.Key,
+                    BetStatus = BetStatus.Proposed
+                };
+                NewBetConditions.Add(newCondition);
             }
 
             newBet.StartDate = DateTime.Now;
@@ -116,21 +129,6 @@ namespace ShipIt.Controllers
             newBet.ApplicationUsers = UsersInDb;
             newBet.BetPremise = newBetViewModel.BetPremise;
             newBet.BetCreatorId = _context.Users.Where(u => u.Id == currentUserId).SingleOrDefault().Id;
-
-            List<Condition> NewBetConditions = new List<Condition>();
-            foreach (KeyValuePair<string, string> userConditions in newBetUserConditions)
-            {
-                var UserinDb = _context.Users
-                    .Where(u => u.Email == userConditions.Key).SingleOrDefault();
-                var newCondition = new Condition()
-                {
-                    WinCondition = userConditions.Value,
-                    Bet = newBet,
-                    ApplicationUser = UserinDb,
-                    BetStatus = BetStatus.Proposed
-                };
-                NewBetConditions.Add(newCondition);
-            }
             newBet.Conditions = NewBetConditions;
 
             _context.Bets.Add(newBet);
@@ -172,6 +170,25 @@ namespace ShipIt.Controllers
                 //lblMsg.ForeColor = Color.Red;
                 //lblMsg.Text = "Error occured while sending your message." + ex.Message;
             }
+
+            return RedirectToAction("MyBets", "Bets");
+        }
+
+        public ActionResult UpdateUser()
+        {
+            string currentUserId = User.Identity.GetUserId();
+            ApplicationUser currentUser = _context.Users.First(u => u.Id == currentUserId);
+            //WHY IS THIS COUNT = 0????
+            var betInDb = _context.Conditions.Where(c => c.UserEmail == currentUser.Email);
+
+            //foreach (Condition condition in conditionsQuery)
+            //{
+            //    //var betInDb = _context.Bets.Single(b => b.Id == condition.Bet.Id).ApplicationUsers;
+            //    var betInDb = _context.Bets.Where(b => b.Id == condition.Bet.Id).SingleOrDefault();
+
+            //    betInDb.ApplicationUsers.Add(currentUser);
+            //        //condition.Bet.ApplicationUsers.Add(user);
+            //}
 
             return RedirectToAction("MyBets", "Bets");
         }

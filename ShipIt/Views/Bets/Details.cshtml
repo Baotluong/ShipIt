@@ -1,4 +1,4 @@
-﻿@model ShipIt.ViewModels.NewBetViewModel
+﻿@model ShipIt.ViewModels.MyBetsViewModel
     
 @{
     ViewBag.Title = @Model.BetPremise;
@@ -7,10 +7,11 @@
 
 <h2>@Model.BetPremise</h2>
 <ul>
+    <li>Status: @Model.BetStatus</li>
     <li>Wager: @Model.BetFee</li>
-    @if (Model.EndTime != null)
+    @if (Model.EndDate != null)
     {
-        <li>End Date: @Model.EndTime</li>
+        <li>End Date: @Model.EndDate</li>
     }
     <li>Bettor 1: @Model.User1</li>
     <li>Bettor 1 Wins If: @Model.User1Condition</li>
