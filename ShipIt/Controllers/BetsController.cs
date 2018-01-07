@@ -37,15 +37,11 @@ namespace ShipIt.Controllers
 
         public ActionResult Details(string id)
         {
-            var bet = _context.Bets
-                .Include(b => b.ApplicationUsers)
-                .Include(b => b.Conditions)
-                .SingleOrDefault(b => b.Id.ToString() == id);
+            var betInDb = _context.Bets.Where(b => b.Id.ToString() == id).SingleOrDefault();
 
-            if (bet == null)
+            if (betInDb == null)
                 return HttpNotFound();
 
-            var betInDb = _context.Bets.Where(b => b.Id.ToString() == id).SingleOrDefault();
             var User1InDb = betInDb.Conditions.ElementAt(0);
             var User2InDb = betInDb.Conditions.ElementAt(1);
 
@@ -174,22 +170,27 @@ namespace ShipIt.Controllers
             return RedirectToAction("MyBets", "Bets");
         }
 
-        public ActionResult UpdateUser()
+        public ActionResult ClaimBetsAfterRegistering()
         {
             string currentUserId = User.Identity.GetUserId();
             ApplicationUser currentUser = _context.Users.First(u => u.Id == currentUserId);
-            //WHY IS THIS COUNT = 0????
-            var betInDb = _context.Conditions.Where(c => c.UserEmail == currentUser.Email);
 
-            //foreach (Condition condition in conditionsQuery)
-            //{
-            //    //var betInDb = _context.Bets.Single(b => b.Id == condition.Bet.Id).ApplicationUsers;
-            //    var betInDb = _context.Bets.Where(b => b.Id == condition.Bet.Id).SingleOrDefault();
+            var conditionsQuery = _context.Conditions
+                .Include(c => c.Bet)
+                .Where(c => c.UserEmail == currentUser.Email)
+                .ToList();
 
-            //    betInDb.ApplicationUsers.Add(currentUser);
-            //        //condition.Bet.ApplicationUsers.Add(user);
-            //}
+            foreach (Condition condition in conditionsQuery)
+            {
+                //Why don't these commented ones work
+                //var betInDb = _context.Bets.Single(b => b.Id == condition.Bet.Id).ApplicationUsers;
+                //var betInDb = _context.Bets.Where(b => b.Id == condition.Bet.Id).SingleOrDefault();
+                condition.Bet.ApplicationUsers.Add(currentUser);
 
+                //betInDb.ApplicationUsers.Add(currentUser);
+                //condition.Bet.ApplicationUsers.Add(user);
+            }
+            _context.SaveChanges();
             return RedirectToAction("MyBets", "Bets");
         }
     }
