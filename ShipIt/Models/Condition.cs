@@ -22,6 +22,6 @@ namespace ShipIt.Models
 
         public string UserEmail { get; set; }
 
-        public BetStatus BetStatus { get; set; }
+        public UserBetStatus UserBetStatus { get; set; }
     }
 }

@@ -251,9 +251,14 @@
     <Compile Include="Migrations\201801061858460_ChangedCondtions.Designer.cs">
       <DependentUpon>201801061858460_ChangedCondtions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801081809156_ChangedCondtionsAgain.cs" />
+    <Compile Include="Migrations\201801081809156_ChangedCondtionsAgain.Designer.cs">
+      <DependentUpon>201801081809156_ChangedCondtionsAgain.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bet.cs" />
+    <Compile Include="Models\UserBetStatus.cs" />
     <Compile Include="Models\BetStatus.cs" />
     <Compile Include="Models\Condition.cs" />
     <Compile Include="Models\CustomBetValidations.cs" />
@@ -263,6 +268,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\CustomDateTimeConverter.cs" />
     <Compile Include="ViewModels\BetFormViewModel.cs" />
+    <Compile Include="ViewModels\BetsDetailViewModel.cs" />
     <Compile Include="ViewModels\MyBetsViewModel.cs" />
     <Compile Include="ViewModels\NewBetViewModel.cs" />
   </ItemGroup>
@@ -615,6 +621,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801061858460_ChangedCondtions.resx">
       <DependentUpon>201801061858460_ChangedCondtions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081809156_ChangedCondtionsAgain.resx">
+      <DependentUpon>201801081809156_ChangedCondtionsAgain.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

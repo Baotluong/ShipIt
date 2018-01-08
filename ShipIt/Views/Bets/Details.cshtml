@@ -1,4 +1,4 @@
-﻿@model ShipIt.ViewModels.MyBetsViewModel
+﻿@model ShipIt.ViewModels.BetsDetailViewModel
     
 @{
     ViewBag.Title = @Model.BetPremise;
@@ -7,7 +7,14 @@
 
 <h2>@Model.BetPremise</h2>
 <ul>
-    <li>Status: @Model.BetStatus</li>
+    @if (Model.UserBetStatusMessage == "NotUsersBet")
+    {
+        <li>Status: @Model.BetStatus</li>
+    }
+    else
+    {
+        <li>Status: @Model.UserBetStatusMessage</li>
+    }
     <li>Wager: @Model.BetFee</li>
     @if (Model.EndDate != null)
     {
@@ -18,3 +25,13 @@
     <li>Bettor 2: @Model.User2</li>
     <li>Bettor 2 Wins If: @Model.User2Condition</li>
 </ul>
+
+@switch(Model.UserBetStatus)
+{
+    case "CanAcceptBet":
+        @Html.ActionLink("Accept this bet?", "AcceptProposedBet", "Bets", new { userEmail = Model.currentUserEmail, betId = Model.BetId }, null)
+        break;
+
+    default:
+        break;
+}

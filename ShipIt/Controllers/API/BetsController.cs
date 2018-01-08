@@ -45,29 +45,30 @@ namespace ShipIt.Controllers.API
                 };
             }));
         }
+        
+        //NOT USING THIS METHOD RIGHT NOW
+        //// GET /api/bets/1
+        //public IHttpActionResult GetBet(string id)
+        //{
+        //    var betInDb = _context.Bets.Where(b => b.Id.ToString() == id).SingleOrDefault();
+        //    var User1InDb = betInDb.Conditions.ElementAt(0);
+        //    var User2InDb = betInDb.Conditions.ElementAt(1);
 
-        // GET /api/bets/1
-        public IHttpActionResult GetBet(string id)
-        {
-            var betInDb = _context.Bets.Where(b => b.Id.ToString() == id).SingleOrDefault();
-            var User1InDb = betInDb.Conditions.ElementAt(0);
-            var User2InDb = betInDb.Conditions.ElementAt(1);
+        //    //TODO: Change this ViewModel
+        //    var MyBetsViewModel = new MyBetsViewModel
+        //    {
+        //        BetFee = betInDb.BetFee,
+        //        BetPremise = betInDb.BetPremise,
+        //        User1 = User1InDb.UserEmail,
+        //        User1Condition = User1InDb.WinCondition,
+        //        User2 = User2InDb.UserEmail,
+        //        User2Condition = User2InDb.WinCondition,
+        //        EndDate = betInDb.EndTime,
+        //        BetStatus = Enum.GetName(typeof(BetStatus), betInDb.BetStatus)
+        //    };
 
-            //TODO: Change this ViewModel
-            var MyBetsViewModel = new MyBetsViewModel
-            {
-                BetFee = betInDb.BetFee,
-                BetPremise = betInDb.BetPremise,
-                User1 = User1InDb.UserEmail,
-                User1Condition = User1InDb.WinCondition,
-                User2 = User2InDb.UserEmail,
-                User2Condition = User2InDb.WinCondition,
-                EndDate = betInDb.EndTime,
-                BetStatus = Enum.GetName(typeof(BetStatus), betInDb.BetStatus)
-            };
-
-            return Ok(MyBetsViewModel);
-        }
+        //    return Ok(MyBetsViewModel);
+        //}
 
         //DO NOT NEED A POST API AT THE MOMENT
         //[HttpPost]
