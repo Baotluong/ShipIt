@@ -13,7 +13,7 @@ namespace ShipIt.ViewModels
 
         public DateTime? EndDate { get; set; }
 
-        public float BetFee { get; set; }
+        public string BetFee { get; set; }
 
         public string User1 { get; set; }
 
@@ -32,5 +32,11 @@ namespace ShipIt.ViewModels
         public string UserBetStatusMessage { get; set; }
 
         public string currentUserEmail { get; set; }
+        
+        public string ProposedBetWinner { get; set; }
+
+        public string BetWinner { get; set; }
+
+        public string ErrorMessage { get; set; }
     }
 }

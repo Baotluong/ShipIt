@@ -17,7 +17,7 @@ namespace ShipIt.Models
 
         public DateTime? EndTime { get; set; }
 
-        public float BetFee { get; set; }
+        public string BetFee { get; set; }
 
         public BetStatus BetStatus { get; set; }
 
@@ -25,9 +25,13 @@ namespace ShipIt.Models
 
         public string BetPremise { get; set; }
 
+        public string ProposedBetWinner { get; set; }
+
+        public string BetWinner { get; set; }
+
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
 
         public virtual ICollection<Condition> Conditions { get; set; }
-
+    
     }
 }

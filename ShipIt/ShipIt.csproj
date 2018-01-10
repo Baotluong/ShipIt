@@ -255,6 +255,10 @@
     <Compile Include="Migrations\201801081809156_ChangedCondtionsAgain.Designer.cs">
       <DependentUpon>201801081809156_ChangedCondtionsAgain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801091734218_AddedBetWinnerAndProposedBetWinnerToBetsAndChangedBetFeeToString.cs" />
+    <Compile Include="Migrations\201801091734218_AddedBetWinnerAndProposedBetWinnerToBetsAndChangedBetFeeToString.Designer.cs">
+      <DependentUpon>201801091734218_AddedBetWinnerAndProposedBetWinnerToBetsAndChangedBetFeeToString.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bet.cs" />
@@ -624,6 +628,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801081809156_ChangedCondtionsAgain.resx">
       <DependentUpon>201801081809156_ChangedCondtionsAgain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801091734218_AddedBetWinnerAndProposedBetWinnerToBetsAndChangedBetFeeToString.resx">
+      <DependentUpon>201801091734218_AddedBetWinnerAndProposedBetWinnerToBetsAndChangedBetFeeToString.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

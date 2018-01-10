@@ -5,31 +5,71 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@if (Model.ErrorMessage != null)
+{
+    <div class="alert alert-info" style="margin-top:13px;">@Model.ErrorMessage</div>
+}
+
 <h2>@Model.BetPremise</h2>
-<ul>
-    @if (Model.UserBetStatusMessage == "NotUsersBet")
-    {
-        <li>Status: @Model.BetStatus</li>
-    }
-    else
-    {
-        <li>Status: @Model.UserBetStatusMessage</li>
-    }
-    <li>Wager: @Model.BetFee</li>
-    @if (Model.EndDate != null)
-    {
-        <li>End Date: @Model.EndDate</li>
-    }
-    <li>Bettor 1: @Model.User1</li>
-    <li>Bettor 1 Wins If: @Model.User1Condition</li>
-    <li>Bettor 2: @Model.User2</li>
-    <li>Bettor 2 Wins If: @Model.User2Condition</li>
-</ul>
+@if (Model.UserBetStatusMessage == "NotUsersBet")
+{
+    <h3>Status: @Model.BetStatus</h3>
+}
+else
+{
+    <h3>Status: @Model.UserBetStatusMessage</h3>
+}
+<p>Wager: @Model.BetFee</p>
+@if (Model.EndDate != null)
+{
+    <p>End Date: @Model.EndDate</p>
+}
+<p>Bettor 1: @Model.User1</p>
+<p>Bettor 1 Wins If: @Model.User1Condition</p>
+<p>Bettor 2: @Model.User2</p>
+<p>Bettor 2 Wins If: @Model.User2Condition</p>
 
 @switch(Model.UserBetStatus)
 {
     case "CanAcceptBet":
-        @Html.ActionLink("Accept this bet?", "AcceptProposedBet", "Bets", new { userEmail = Model.currentUserEmail, betId = Model.BetId }, null)
+        <h4>@Html.ActionLink("Accept this bet?", "AcceptBet", "Bets", new {betId = Model.BetId }, null)</h4>
+        break;
+
+    case "WaitingForAcceptBet":
+        <h4>Waiting for other bettor(s) to accept the bet.</h4>
+        break;
+
+    case "CanProposeWinner":
+        <h4>@Html.ActionLink(Model.User1+" won this bet?", "ProposeWinner", "Bets", new { proposedWinner = Model.User1, betId = Model.BetId }, null)</h4>
+        <h4>@Html.ActionLink(Model.User2+" won this bet?", "ProposeWinner", "Bets", new { proposedWinner = Model.User2, betId = Model.BetId }, null)</h4>
+        break;
+
+    case "WaitingForAcceptWinner":
+        <h4>Waiting for other bettor(s) to accept the proposed winner.</h4>
+        break;
+
+    case "CanAcceptWinner":
+        <h4>@Html.ActionLink("Did " + Model.ProposedBetWinner + " win this bet?", "AcceptWinner", "Bets", new { betId = Model.BetId }, null)</h4>
+        if (Model.ProposedBetWinner == Model.User1)
+        {
+            <h4>@Html.ActionLink("No, " + Model.User2 + " won this bet?", "ProposeWinner", "Bets", new { proposedWinner = Model.User2, betId = Model.BetId }, null)</h4>
+        }
+        else
+        {
+            <h4>@Html.ActionLink("No, " + Model.User1 + " won this bet?", "ProposeWinner", "Bets", new { proposedWinner = Model.User1, betId = Model.BetId }, null)</h4>
+        }
+        break;
+
+    case "NeedsToSettle":
+        <h4>Please settle the bet with @Model.BetWinner.</h4>
+        break;
+
+    case "CanAcceptPaid":
+        <h4>@Html.ActionLink("Has the bet been settled with you?", "AcceptPaid", "Bets", new { betId = Model.BetId }, null)</h4>
+        break;
+
+    case "Resolved":        
+        <h4>@Html.ActionLink("Make a new bet?", "New", "Bets")</h4>
         break;
 
     default:

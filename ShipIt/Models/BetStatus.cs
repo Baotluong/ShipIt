@@ -8,8 +8,8 @@ namespace ShipIt.Models
     public enum BetStatus
     {
         Proposed = 1,
-        InProgress = 2,
+        Active = 2,
         Completed = 3,
-        Paid = 4
+        Settled = 4
     }
 }

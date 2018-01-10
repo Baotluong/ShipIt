@@ -56,10 +56,10 @@ namespace ShipIt.Controllers
         public string GetUserBetStatusMessage(UserBetStatus userBetStatus)
         {
             var userBetStatusMessage = new Dictionary<UserBetStatus, string> {
-                { UserBetStatus.ProposedBet, "Waiting for other bettor(s) to accept the bet."},
+                { UserBetStatus.WaitingForAcceptBet, "Waiting for other bettor(s) to accept the bet."},
                 { UserBetStatus.CanAcceptBet, "Do you want to accept the bet?"},
                 { UserBetStatus.CanProposeWinner, "Do you want to propose the winner?"},
-                { UserBetStatus.ProposedWinner, "Waiting for other bettor(s) to accept the winner."},
+                { UserBetStatus.WaitingForAcceptWinner, "Waiting for other bettor(s) to accept the winner."},
                 { UserBetStatus.CanAcceptWinner, "Do you want to accept the winner?"},
                 { UserBetStatus.NeedsToSettle, "Waiting for winner to accept settlement."},
                 { UserBetStatus.CanAcceptPaid, "Has the bet been settled?"},
@@ -69,7 +69,7 @@ namespace ShipIt.Controllers
             return userBetStatusMessage[userBetStatus];
         }
 
-        public ActionResult Details(string id)
+        public ActionResult Details(string id, string errorMessage)
         {
             var betInDb = GetBet(id);
             var currentUser = GetCurrentUser();
@@ -101,7 +101,10 @@ namespace ShipIt.Controllers
                 BetStatus = Enum.GetName(typeof(BetStatus), betInDb.BetStatus),
                 UserBetStatus = (myConditions != null) ? Enum.GetName(typeof(UserBetStatus), myConditions.UserBetStatus) : "NotUsersBet",
                 UserBetStatusMessage = (myConditions != null) ? GetUserBetStatusMessage(myConditions.UserBetStatus) : "NotUsersBets",
-                currentUserEmail = currentUser.Email
+                currentUserEmail = currentUser.Email,
+                BetWinner = betInDb.BetWinner,
+                ProposedBetWinner = betInDb.ProposedBetWinner,
+                ErrorMessage = errorMessage
             };
 
             return View(betsDetailViewModel);
@@ -138,16 +141,16 @@ namespace ShipIt.Controllers
                 new KeyValuePair<string, string>(newBetViewModel.User2, newBetViewModel.User2Condition)
             };
 
-            List<ApplicationUser> UsersInDb = new List<ApplicationUser>();
-            List<Condition> NewBetConditions = new List<Condition>();
+            List<ApplicationUser> getUsersToBeAddedToBet = new List<ApplicationUser>();
+            List<Condition> newConditionsToBeAddedToBet = new List<Condition>();
 
             foreach (KeyValuePair<string, string> userConditions in newBetUserConditions)
             {
-                var UserinDb = _context.Users
+                var getUserInDb = _context.Users
                     .Where(u => u.Email == userConditions.Key).SingleOrDefault();
 
-                if (UserinDb != null)
-                    UsersInDb.Add(UserinDb);
+                if (getUserInDb != null)
+                    getUsersToBeAddedToBet.Add(getUserInDb);
 
                 var newCondition = new Condition()
                 {
@@ -156,19 +159,19 @@ namespace ShipIt.Controllers
                     //Another Hack. Talk to Bryce
                     //ApplicationUser = (UserinDb == null) ? null : UserinDb,
                     UserEmail = userConditions.Key,
-                    UserBetStatus = UserBetStatus.ProposedBet
+                    UserBetStatus = (currentUser.Email == userConditions.Key) ? UserBetStatus.WaitingForAcceptBet : UserBetStatus.CanAcceptBet, 
                 };
-                NewBetConditions.Add(newCondition);
+                newConditionsToBeAddedToBet.Add(newCondition);
             }
 
             newBet.StartDate = DateTime.Now;
             newBet.BetStatus = BetStatus.Proposed;
             newBet.EndTime = newBetViewModel.EndTime;
             newBet.BetFee = newBetViewModel.BetFee;
-            newBet.ApplicationUsers = UsersInDb;
+            newBet.ApplicationUsers = getUsersToBeAddedToBet;
             newBet.BetPremise = newBetViewModel.BetPremise;
             newBet.BetCreatorId = currentUser.Id;
-            newBet.Conditions = NewBetConditions;
+            newBet.Conditions = newConditionsToBeAddedToBet;
 
             _context.Bets.Add(newBet);
             _context.SaveChanges();
@@ -193,9 +196,9 @@ namespace ShipIt.Controllers
 
             MailMessage msg = new MailMessage();
             msg.From = new MailAddress("baosapp@gmail.com");
-            msg.To.Add(new MailAddress("baotluong@gmail.com"));
+            msg.To.Add(new MailAddress("baosapp@mail.usf.edu"));
 
-            msg.Subject = "This is a test Email subject";
+            msg.Subject = "This is a test Email subject, bitch";
             msg.IsBodyHtml = true;
             msg.Body = string.Format("<html><head></head><body><b>Test HTML Email</b></body>");
 
@@ -215,9 +218,11 @@ namespace ShipIt.Controllers
 
         public ActionResult ClaimBetsAfterRegistering()
         {
+            var currentUser = GetCurrentUser();
+
             var conditionsQuery = _context.Conditions
                 .Include(c => c.Bet)
-                .Where(c => c.UserEmail == GetCurrentUser().Email)
+                .Where(c => c.UserEmail == currentUser.Email)
                 .ToList();
 
             foreach (Condition condition in conditionsQuery)
@@ -225,7 +230,7 @@ namespace ShipIt.Controllers
                 //Why don't these commented ones work
                 //var betInDb = _context.Bets.Single(b => b.Id == condition.Bet.Id).ApplicationUsers;
                 //var betInDb = _context.Bets.Where(b => b.Id == condition.Bet.Id).SingleOrDefault();
-                condition.Bet.ApplicationUsers.Add(GetCurrentUser());
+                condition.Bet.ApplicationUsers.Add(currentUser);
 
                 //betInDb.ApplicationUsers.Add(currentUser);
             }
@@ -234,15 +239,83 @@ namespace ShipIt.Controllers
             return RedirectToAction("MyBets", "Bets");
         }
 
-        public ActionResult AcceptProposedBet(string userEmail, string betId)
+        public ActionResult AcceptBet(string betId)
         {
             var betInDb = GetBet(betId);
 
-            if (userEmail != GetCurrentUser().Email)
-                return HttpNotFound();
+            //Reloads if user is not on expected status
+            if(betInDb.Conditions.Single(c => c.UserEmail == GetCurrentUser().Email).UserBetStatus != UserBetStatus.CanAcceptBet)
+                 return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
 
-            betInDb.Conditions.First(c => c.UserEmail == userEmail).UserBetStatus = UserBetStatus.CanProposeWinner;
-            betInDb.BetStatus = BetStatus.InProgress;
+            foreach (Condition condition in betInDb.Conditions)
+            {
+                condition.UserBetStatus = UserBetStatus.CanProposeWinner;
+            }
+
+            betInDb.BetStatus = BetStatus.Active;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Details", "Bets", new { id = betId });
+        }
+
+        public ActionResult ProposeWinner(string proposedWinner, string betId)
+        {
+            var betInDb = GetBet(betId);
+
+            //Catches if the user is on the right status
+            if (betInDb.Conditions.Single(c => c.UserEmail == GetCurrentUser().Email).UserBetStatus != UserBetStatus.CanProposeWinner)
+                return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
+
+            betInDb.ProposedBetWinner = proposedWinner;
+
+            foreach(Condition condition in betInDb.Conditions)
+            {
+                condition.UserBetStatus = (condition.UserEmail == proposedWinner) ? UserBetStatus.WaitingForAcceptWinner : UserBetStatus.CanAcceptWinner;
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Details", "Bets", new { id = betId });
+        }
+
+        public ActionResult AcceptWinner(string betId)
+        {
+            //This currrently does not scale beyond 2 bettors.
+            var betInDb = GetBet(betId);
+
+            //Catches if the user is on the right status
+            if (betInDb.Conditions.Single(c => c.UserEmail == GetCurrentUser().Email).UserBetStatus != UserBetStatus.CanAcceptWinner)
+                return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
+
+            betInDb.BetWinner = betInDb.ProposedBetWinner;
+
+            foreach (Condition condition in betInDb.Conditions)
+            {
+                condition.UserBetStatus = (condition.UserEmail == betInDb.BetWinner) ? UserBetStatus.CanAcceptPaid : UserBetStatus.NeedsToSettle;
+            }
+
+            betInDb.BetStatus = BetStatus.Completed;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Details", "Bets", new { id = betId });
+        }
+
+        public ActionResult AcceptPaid(string betId)
+        {
+            var betInDb = GetBet(betId);
+
+            //Catches if the user is on the right status
+            if (betInDb.Conditions.Single(c => c.UserEmail == GetCurrentUser().Email).UserBetStatus != UserBetStatus.CanAcceptPaid)
+                return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
+
+            foreach (Condition condition in betInDb.Conditions)
+            {
+                condition.UserBetStatus = UserBetStatus.Resolved;
+            }
+
+            betInDb.BetStatus = BetStatus.Settled;
 
             _context.SaveChanges();
 

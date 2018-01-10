@@ -15,8 +15,7 @@ namespace ShipIt.ViewModels
 
         [Required(ErrorMessage = "Please enter a valid wager.")]
         [Display(Name = "Bet Wager")]
-        [Range(0, Double.PositiveInfinity, ErrorMessage = "The wager cannot be negative.")]
-        public float BetFee { get; set; }
+        public string BetFee { get; set; }
 
         [Required(ErrorMessage = "Please enter a valid Email Address.")]
         [Display(Name = "Bettor 1")]
