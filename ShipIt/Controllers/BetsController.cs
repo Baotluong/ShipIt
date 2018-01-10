@@ -30,9 +30,14 @@ namespace ShipIt.Controllers
             return View();
         }
 
-        public ActionResult MyBets()
+        public ActionResult BetsIndex(string id)
         {
-            return View();
+            var viewModel = new BetsIndexViewModel
+            {
+                id = id
+            };
+
+            return View(viewModel);
         }
 
         private ApplicationUser GetCurrentUser()

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ShipIt.Models.Bet>
+﻿@model ShipIt.ViewModels.BetsIndexViewModel
 
 @{
     ViewBag.Title = "My Bets";
@@ -14,9 +14,9 @@
             <th>Bet</th>
             <th>Wager</th>
             <th>Bettor 1</th>
-            <th>Bettor 1 Win Condition</th>
+            <th>Bettor 1 Wins If</th>
             <th>Bettor 2</th>
-            <th>Bettor 2 Win Condition</th>
+            <th>Bettor 2 Wins If</th>
             <th>Start Date</th>
             <th>End Date</th>
         </tr>
@@ -27,10 +27,11 @@
 @section scripts
 {
     <script>
+        //TODO: Not sure how to pass the id from viewmodel to grab other users bet index
         $(document).ready(function () {
             var table = $("#bets").DataTable({
                 ajax: {
-                    url: "/api/mybets",
+                    url: "/api/bets/",
                     dataSrc: ""
                 },
                 columns: [

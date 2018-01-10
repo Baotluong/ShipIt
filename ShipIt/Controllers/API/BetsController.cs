@@ -19,14 +19,15 @@ namespace ShipIt.Controllers.API
 
         // GET /api/mybets
         [HttpGet]
-        [Route("api/mybets")]
-        public IHttpActionResult GetMyBets(string query = null)
+        [Route("api/bets/{id?}")]
+        public IHttpActionResult GetMyBets(string id = null)
         {
             string currentUserId = User.Identity.GetUserId();
+            ApplicationUser currentUser = _context.Users.Single(u => u.Id == currentUserId);
 
-            ApplicationUser currentUser = _context.Users.First(u => u.Id == currentUserId);
+            ApplicationUser indexUser = (id == null) ? currentUser : _context.Users.Single(u => u.Id == id);
 
-            return Ok(currentUser.Bets.Select(b => {
+            return Ok(indexUser.Bets.Select(b => {
                 var User1InDb = b.Conditions.ElementAt(0);
                 var User2InDb = b.Conditions.ElementAt(1);
 

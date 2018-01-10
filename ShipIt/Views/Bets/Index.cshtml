@@ -1,21 +1,22 @@
-﻿@model IEnumerable<ShipIt.Models.Bet>
+﻿@model ShipIt.ViewModels.BetsDetailViewModel
 
 @{
     ViewBag.Title = "My Bets";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Bets NEEDS TO BE FIXED COMPLETELY</h2>
+<h2>My Bets</h2>
 
 <table id="bets" class="table table-bordered table-hover">
     <thead>
         <tr>
+            <th>Status</th>
             <th>Bet</th>
-            <th>Bettor 1</th>
-            <th>Bettor 1 Win Condition</th>
-            <th>Bettor 2</th>
-            <th>Bettor 2 Win Condition</th>
             <th>Wager</th>
+            <th>Bettor 1</th>
+            <th>Bettor 1 Wins If</th>
+            <th>Bettor 2</th>
+            <th>Bettor 2 Wins If</th>
             <th>Start Date</th>
             <th>End Date</th>
         </tr>
@@ -29,44 +30,44 @@
         $(document).ready(function () {
             var table = $("#bets").DataTable({
                 ajax: {
-                    url: "/api/mybets",
+                    url: "/api/bets",
                     dataSrc: ""
                 },
                 columns: [
                     {
+                        data: "BetStatus"
+                    },
+                    {
                         data: "BetPremise",
                         render: function (data, type, bet) {
-                            return "<a href='/bets/" + bet.id + "'>" + bet + "</a>";
+                            return (bet.BetPremise)
+                                ? "<a href='/bets/details/" + bet.BetId + "'>" + bet.BetPremise + "</a>"
+                                : null;
                         }
+                    },
+                    {
+                        data: "BetWager"
                     },
                     {
                         data: "User1"
                     },
                     {
-                        data: "id",
-                        render: function (data) {
-                            return "<button class='btn-link js-delete' data-customer-id=" + data + ">Delete</button>";
-                        }
-                    }
+                        data: "User1Condition",
+                    },
+                    {
+                        data: "User2"
+                    },
+                    {
+                        data: "User2Condition",
+                    },
+                    {
+                        data: "StartDate",
+                    },
+                    {
+                        data: "EndDate"
+                    },
                 ]
             });
-
-
-            //$("#customers").on("click", ".js-delete", function () {
-            //    var button = $(this);
-
-            //    bootbox.confirm("Are you sure you want to delete this customer?", function (result) {
-            //        if (result) {
-            //            $.ajax({
-            //                url: "/api/customers/" + button.attr("data-customer-id"),
-            //                method: "DELETE",
-            //                success: function () {
-            //                    table.row(button.parents("tr")).remove().draw();
-            //                }
-            //            });
-            //        }
-            //    });
-            //});
         });
     </script>
 }
