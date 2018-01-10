@@ -12,7 +12,7 @@ namespace ShipIt.ViewModels
 
         public DateTime? EndDate { get; set; }
 
-        public string BetFee { get; set; }
+        public string BetWager { get; set; }
 
         public string User1 { get; set; }
 

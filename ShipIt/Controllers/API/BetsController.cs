@@ -32,7 +32,7 @@ namespace ShipIt.Controllers.API
 
                 return new MyBetsViewModel()
                 {
-                    BetFee = b.BetFee,
+                    BetWager = b.BetWager,
                     BetPremise = b.BetPremise,
                     User1 = User1InDb.UserEmail,
                     User1Condition = User1InDb.WinCondition,

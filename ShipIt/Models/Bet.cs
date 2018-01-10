@@ -17,7 +17,7 @@ namespace ShipIt.Models
 
         public DateTime? EndTime { get; set; }
 
-        public string BetFee { get; set; }
+        public string BetWager { get; set; }
 
         public BetStatus BetStatus { get; set; }
 

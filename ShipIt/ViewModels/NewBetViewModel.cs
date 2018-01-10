@@ -13,9 +13,8 @@ namespace ShipIt.ViewModels
         [ValidEndDate]
         public DateTime? EndTime { get; set; }
 
-        [Required(ErrorMessage = "Please enter a valid wager.")]
-        [Display(Name = "Bet Wager")]
-        public string BetFee { get; set; }
+        [Display(Name = "Bet Wager. (Optional)")]
+        public string BetWager { get; set; }
 
         [Required(ErrorMessage = "Please enter a valid Email Address.")]
         [Display(Name = "Bettor 1")]

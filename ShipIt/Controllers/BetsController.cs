@@ -56,14 +56,14 @@ namespace ShipIt.Controllers
         public string GetUserBetStatusMessage(UserBetStatus userBetStatus)
         {
             var userBetStatusMessage = new Dictionary<UserBetStatus, string> {
-                { UserBetStatus.WaitingForAcceptBet, "Waiting for other bettor(s) to accept the bet."},
-                { UserBetStatus.CanAcceptBet, "Do you want to accept the bet?"},
-                { UserBetStatus.CanProposeWinner, "Do you want to propose the winner?"},
-                { UserBetStatus.WaitingForAcceptWinner, "Waiting for other bettor(s) to accept the winner."},
-                { UserBetStatus.CanAcceptWinner, "Do you want to accept the winner?"},
-                { UserBetStatus.NeedsToSettle, "Waiting for winner to accept settlement."},
-                { UserBetStatus.CanAcceptPaid, "Has the bet been settled?"},
-                { UserBetStatus.Resolved, "The bet has completed."},
+                { UserBetStatus.WaitingForAcceptBet, "Waiting for other(s) to accept Bet."},
+                { UserBetStatus.CanAcceptBet, "May accept Bet."},
+                { UserBetStatus.CanProposeWinner, "May propose Winner."},
+                { UserBetStatus.WaitingForAcceptWinner, "Waiting for other(s) to accept Winner."},
+                { UserBetStatus.CanAcceptWinner, "May accept Winner"},
+                { UserBetStatus.NeedsToSettle, "Waiting for other(s) to accept Settlement."},
+                { UserBetStatus.CanAcceptPaid, "May accept Settlement?"},
+                { UserBetStatus.Resolved, "Bet is Resolved."},
             };
 
             return userBetStatusMessage[userBetStatus];
@@ -91,7 +91,7 @@ namespace ShipIt.Controllers
             var betsDetailViewModel = new BetsDetailViewModel
             {
                 BetId = betInDb.Id.ToString(),
-                BetFee = betInDb.BetFee,
+                BetWager = betInDb.BetWager,
                 BetPremise = betInDb.BetPremise,
                 User1 = user1Conditions.UserEmail,
                 User1Condition = user1Conditions.WinCondition,
@@ -167,7 +167,7 @@ namespace ShipIt.Controllers
             newBet.StartDate = DateTime.Now;
             newBet.BetStatus = BetStatus.Proposed;
             newBet.EndTime = newBetViewModel.EndTime;
-            newBet.BetFee = newBetViewModel.BetFee;
+            newBet.BetWager = newBetViewModel.BetWager;
             newBet.ApplicationUsers = getUsersToBeAddedToBet;
             newBet.BetPremise = newBetViewModel.BetPremise;
             newBet.BetCreatorId = currentUser.Id;
@@ -281,7 +281,6 @@ namespace ShipIt.Controllers
 
         public ActionResult AcceptWinner(string betId)
         {
-            //This currrently does not scale beyond 2 bettors.
             var betInDb = GetBet(betId);
 
             //Catches if the user is on the right status
@@ -292,7 +291,11 @@ namespace ShipIt.Controllers
 
             foreach (Condition condition in betInDb.Conditions)
             {
-                condition.UserBetStatus = (condition.UserEmail == betInDb.BetWinner) ? UserBetStatus.CanAcceptPaid : UserBetStatus.NeedsToSettle;
+                condition.UserBetStatus = (betInDb.BetWager == null) ? condition.UserBetStatus = UserBetStatus.Resolved: (condition.UserEmail == betInDb.BetWinner) ? UserBetStatus.CanAcceptPaid : UserBetStatus.NeedsToSettle;
+                //if (betInDb.BetFee == null)
+                //    condition.UserBetStatus = UserBetStatus.Resolved;
+                //else
+                //    condition.UserBetStatus = (condition.UserEmail == betInDb.BetWinner) ? UserBetStatus.CanAcceptPaid : UserBetStatus.NeedsToSettle;
             }
 
             betInDb.BetStatus = BetStatus.Completed;

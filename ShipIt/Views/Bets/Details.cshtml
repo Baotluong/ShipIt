@@ -19,7 +19,10 @@ else
 {
     <h3>Status: @Model.UserBetStatusMessage</h3>
 }
-<p>Wager: @Model.BetFee</p>
+@if (Model.EndDate != null)
+{
+    <p>End Date: @Model.BetWager</p>
+}
 @if (Model.EndDate != null)
 {
     <p>End Date: @Model.EndDate</p>

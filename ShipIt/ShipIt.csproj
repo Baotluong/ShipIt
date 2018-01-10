@@ -259,6 +259,10 @@
     <Compile Include="Migrations\201801091734218_AddedBetWinnerAndProposedBetWinnerToBetsAndChangedBetFeeToString.Designer.cs">
       <DependentUpon>201801091734218_AddedBetWinnerAndProposedBetWinnerToBetsAndChangedBetFeeToString.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801101834590_ChangedBetFeeToBetWagerInBetModel.cs" />
+    <Compile Include="Migrations\201801101834590_ChangedBetFeeToBetWagerInBetModel.Designer.cs">
+      <DependentUpon>201801101834590_ChangedBetFeeToBetWagerInBetModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bet.cs" />
@@ -271,7 +275,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\CustomDateTimeConverter.cs" />
-    <Compile Include="ViewModels\BetFormViewModel.cs" />
     <Compile Include="ViewModels\BetsDetailViewModel.cs" />
     <Compile Include="ViewModels\MyBetsViewModel.cs" />
     <Compile Include="ViewModels\NewBetViewModel.cs" />
@@ -631,6 +634,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801091734218_AddedBetWinnerAndProposedBetWinnerToBetsAndChangedBetFeeToString.resx">
       <DependentUpon>201801091734218_AddedBetWinnerAndProposedBetWinnerToBetsAndChangedBetFeeToString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801101834590_ChangedBetFeeToBetWagerInBetModel.resx">
+      <DependentUpon>201801101834590_ChangedBetFeeToBetWagerInBetModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
