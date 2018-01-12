@@ -4,6 +4,7 @@ using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using ShipIt.Models;
 using ShipIt.ViewModels;
+using System.Collections.Generic;
 
 namespace ShipIt.Controllers.API
 {
@@ -17,8 +18,6 @@ namespace ShipIt.Controllers.API
             _context = new ApplicationDbContext();
         }
 
-        // GET /api/mybets
-        [HttpGet]
         [Route("api/bets/{id?}")]
         public IHttpActionResult GetMyBets(string id = null)
         {
@@ -27,26 +26,39 @@ namespace ShipIt.Controllers.API
 
             ApplicationUser indexUser = (id == null) ? currentUser : _context.Users.Single(u => u.Id == id);
 
-            return Ok(indexUser.Bets.Select(b => {
-                var User1InDb = b.Conditions.ElementAt(0);
-                var User2InDb = b.Conditions.ElementAt(1);
+            var indexQuery = indexUser.Bets.Select(b => new MyBetsViewModel()).ToList();
 
-                return new MyBetsViewModel()
+            var betsQueryIsBetCreator = _context.Bets.Where(b => b.BetCreatorId == indexUser.Id).ToList();
+            var betsQueryIsABettor = indexUser.Bets.ToList();
+            var betsQuery = betsQueryIsABettor.Union(betsQueryIsBetCreator).ToList();
+
+            var myBetsViewModelList = new List<MyBetsViewModel>();
+
+            foreach (Bet bet in betsQuery)
+            {
+                var User1InDb = bet.Conditions.ElementAt(0);
+                var User2InDb = bet.Conditions.ElementAt(1);
+
+                var vm = new MyBetsViewModel()
                 {
-                    BetWager = b.BetWager,
-                    BetPremise = b.BetPremise,
+                    BetWager = bet.BetWager,
+                    BetPremise = bet.BetPremise,
                     User1 = User1InDb.UserEmail,
                     User1Condition = User1InDb.WinCondition,
                     User2 = User2InDb.UserEmail,
                     User2Condition = User2InDb.WinCondition,
-                    EndDate = b.EndTime,
-                    StartDate = b.StartDate,
-                    BetId = b.Id.ToString(),
-                    BetStatus = Enum.GetName(typeof(BetStatus), b.BetStatus)
+                    EndDate = bet.EndTime,
+                    StartDate = bet.StartDate,
+                    BetId = bet.Id.ToString(),
+                    BetStatus = Enum.GetName(typeof(BetStatus), bet.BetStatus)
                 };
-            }));
+                myBetsViewModelList.Add(vm);
+            }
+
+            return Ok(myBetsViewModelList);
         }
-        
+
+
         //NOT USING THIS METHOD RIGHT NOW
         //// GET /api/bets/1
         //public IHttpActionResult GetBet(string id)

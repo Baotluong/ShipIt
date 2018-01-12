@@ -9,6 +9,7 @@ using System.Data.Entity;
 using System.Net.Mail;
 using System.IO;
 using System.Configuration;
+using ShipIt.Services;
 
 namespace ShipIt.Controllers
 {
@@ -32,6 +33,7 @@ namespace ShipIt.Controllers
             return View();
         }
 
+        //bets/betsindex/{id}
         public ActionResult BetsIndex(string id)
         {
             var viewModel = new BetsIndexViewModel
@@ -107,7 +109,7 @@ namespace ShipIt.Controllers
                 EndDate = betInDb.EndTime,
                 BetStatus = Enum.GetName(typeof(BetStatus), betInDb.BetStatus),
                 UserBetStatus = (myConditions != null) ? Enum.GetName(typeof(UserBetStatus), myConditions.UserBetStatus) : "NotUsersBet",
-                UserBetStatusMessage = (myConditions != null) ? GetUserBetStatusMessage(myConditions.UserBetStatus) : "NotUsersBets",
+                UserBetStatusMessage = (myConditions != null) ? GetUserBetStatusMessage(myConditions.UserBetStatus) : Enum.GetName(typeof(BetStatus), betInDb.BetStatus),
                 currentUserEmail = currentUser.Email,
                 BetWinner = betInDb.BetWinner,
                 ProposedBetWinner = betInDb.ProposedBetWinner,
@@ -194,6 +196,7 @@ namespace ShipIt.Controllers
                         UserName = condition.UserEmail,
                         Subject = "You've been included in a bet: " + newBet.BetPremise + "!",
                         Title = "You've been included in a bet! ",
+                        BetPremise = newBet.BetPremise,
                         User1 = newBet.Conditions.ElementAt(0).UserEmail,
                         User1Condition = newBet.Conditions.ElementAt(0).WinCondition,
                         User2 = newBet.Conditions.ElementAt(1).UserEmail,
@@ -265,8 +268,9 @@ namespace ShipIt.Controllers
                         {
                             ToEmail = condition.UserEmail,
                             UserName = condition.UserEmail,
-                            Subject = betInDb.BetPremise + "is now active!",
+                            Subject = betInDb.BetPremise + " is now active!",
                             Title = "This bet is now active!",
+                            BetPremise = betInDb.BetPremise,
                             User1 = betInDb.Conditions.ElementAt(0).UserEmail,
                             User1Condition = betInDb.Conditions.ElementAt(0).WinCondition,
                             User2 = betInDb.Conditions.ElementAt(1).UserEmail,
@@ -291,7 +295,8 @@ namespace ShipIt.Controllers
             var currentUser = GetCurrentUser();
 
             //Catches if the user is on the right status
-            if (betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanProposeWinner)
+            if (betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanProposeWinner &&
+                betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanAcceptWinner)
                 return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
 
             betInDb.ProposedBetWinner = proposedBetWinner;
@@ -342,6 +347,7 @@ namespace ShipIt.Controllers
                 {
                     ToEmail = condition.UserEmail,
                     UserName = condition.UserEmail,
+                    BetPremise = betInDb.BetPremise,
                     User1 = betInDb.Conditions.ElementAt(0).UserEmail,
                     User1Condition = betInDb.Conditions.ElementAt(0).WinCondition,
                     User2 = betInDb.Conditions.ElementAt(1).UserEmail,
@@ -359,13 +365,13 @@ namespace ShipIt.Controllers
                 {
                     emailObject.Title = betInDb.ProposedBetWinner + " has won!";
                     emailObject.Subject = betInDb.ProposedBetWinner + " has been declared the winner of: " + betInDb.BetPremise;
-                    emailObject.Description = "You have won the bet! Update the bet when the wager of: " + betInDb.BetWager + "has been settled.";
+                    emailObject.Description = "You have won the bet! Update the bet when the wager of: " + betInDb.BetWager + " has been settled.";
                 }
                 else
                 {
                     emailObject.Title = betInDb.ProposedBetWinner + " has won!";
                     emailObject.Subject = betInDb.ProposedBetWinner + " has been declared the winner of: " + betInDb.BetPremise;
-                    emailObject.Description = betInDb.ProposedBetWinner + "has won the bet! Please settle the wager of: " + betInDb.BetWager + "with him/her.";
+                    emailObject.Description = betInDb.ProposedBetWinner + "has won the bet! Please settle the wager of: " + betInDb.BetWager + " with him/her.";
                 }
 
                 SendEmail(emailObject);
@@ -395,8 +401,9 @@ namespace ShipIt.Controllers
                 {
                     ToEmail = condition.UserEmail,
                     UserName = condition.UserEmail,
-                    Subject = "The bet has been resolved!" + betInDb.BetWinner + " has won!",
+                    Subject = "The bet has been resolved! " + betInDb.BetWinner + " has won!",
                     Title = "All users have settled the bet!",
+                    BetPremise = betInDb.BetPremise,
                     User1 = betInDb.Conditions.ElementAt(0).UserEmail,
                     User1Condition = betInDb.Conditions.ElementAt(0).WinCondition,
                     User2 = betInDb.Conditions.ElementAt(1).UserEmail,
@@ -426,6 +433,7 @@ namespace ShipIt.Controllers
             body = body.Replace("{Title}", vm.Title);
             body = body.Replace("{Url}", vm.Url);
             body = body.Replace("{Description}", vm.Description.Replace(".", "<span>.</span>"));
+            body = body.Replace("{BetPremise}", vm.BetPremise.Replace(".", "<span>.</span>"));
             body = body.Replace("{User1}", vm.User1.Replace(".", "<span>.</span>"));
             body = body.Replace("{User1Condition}", vm.User1Condition.Replace(".", "<span>.</span>"));
             body = body.Replace("{User2}", vm.User2.Replace(".", "<span>.</span>"));
@@ -479,44 +487,5 @@ namespace ShipIt.Controllers
             SendEmail(emailObject);
             return RedirectToAction("BetsIndex", "Bets");
         }
-
-        //Testing another email snippet
-        //public ActionResult SendEmail(object sender, EventArgs e)
-        //{
-        //    SmtpClient client = new SmtpClient();
-        //    client.DeliveryMethod = SmtpDeliveryMethod.Network;
-        //    client.EnableSsl = true;
-        //    client.Host = "smtp.gmail.com";
-        //    client.Port = 587;
-
-        //    // setup Smtp authentication
-        //    System.Net.NetworkCredential credentials =
-        //        new System.Net.NetworkCredential(System.Web.Configuration.WebConfigurationManager.AppSettings["EmailUserName"],
-        //        System.Web.Configuration.WebConfigurationManager.AppSettings["EmailPassword"]);
-        //    client.UseDefaultCredentials = false;
-        //    client.Credentials = credentials;
-
-        //    MailMessage msg = new MailMessage();
-        //    msg.From = new MailAddress("baosapp@gmail.com");
-        //    msg.To.Add(new MailAddress("baosapp@mail.usf.edu"));
-
-        //    msg.Subject = "This is a test Email subject, bitch";
-        //    msg.IsBodyHtml = true;
-        //    msg.Body = string.Format("<html><head></head><body><b>Test HTML Email</b></body>");
-
-
-        //    try
-        //    {
-        //        client.Send(msg);
-        //        //lblMsg.Text = "Your message has been successfully sent.";
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //lblMsg.ForeColor = Color.Red;
-        //        //lblMsg.Text = "Error occured while sending your message." + ex.Message;
-        //    }
-
-        //    return RedirectToAction("MyBets", "Bets");
-        //}
     }
 }

@@ -43,8 +43,8 @@ else
         break;
 
     case "CanProposeWinner":
-        <h4>@Html.ActionLink(Model.User1+" won this bet?", "ProposeWinner", "Bets", new { proposedWinner = Model.User1, betId = Model.BetId }, null)</h4>
-        <h4>@Html.ActionLink(Model.User2+" won this bet?", "ProposeWinner", "Bets", new { proposedWinner = Model.User2, betId = Model.BetId }, null)</h4>
+        <h4>@Html.ActionLink(Model.User1+" won this bet?", "ProposeWinner", "Bets", new { proposedBetWinner = Model.User1, betId = Model.BetId }, null)</h4>
+        <h4>@Html.ActionLink(Model.User2+" won this bet?", "ProposeWinner", "Bets", new { proposedBetWinner = Model.User2, betId = Model.BetId }, null)</h4>
         break;
 
     case "WaitingForAcceptWinner":
@@ -55,11 +55,11 @@ else
         <h4>@Html.ActionLink("Did " + Model.ProposedBetWinner + " win this bet?", "AcceptWinner", "Bets", new { betId = Model.BetId }, null)</h4>
         if (Model.ProposedBetWinner == Model.User1)
         {
-            <h4>@Html.ActionLink("No, " + Model.User2 + " won this bet?", "ProposeWinner", "Bets", new { proposedWinner = Model.User2, betId = Model.BetId }, null)</h4>
+            <h4>@Html.ActionLink("No, " + Model.User2 + " won this bet?", "ProposeWinner", "Bets", new { proposedBetWinner = Model.User2, betId = Model.BetId }, null)</h4>
         }
         else
         {
-            <h4>@Html.ActionLink("No, " + Model.User1 + " won this bet?", "ProposeWinner", "Bets", new { proposedWinner = Model.User1, betId = Model.BetId }, null)</h4>
+            <h4>@Html.ActionLink("No, " + Model.User1 + " won this bet?", "ProposeWinner", "Bets", new { proposedBetWinner = Model.User1, betId = Model.BetId }, null)</h4>
         }
         break;
 

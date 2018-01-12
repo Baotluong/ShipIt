@@ -31,7 +31,7 @@
         $(document).ready(function () {
             var table = $("#bets").DataTable({
                 ajax: {
-                    url: "/api/bets/",
+                    url: "/api/bets/@Model.id",
                     dataSrc: ""
                 },
                 columns: [
