@@ -276,6 +276,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\CustomDateTimeConverter.cs" />
     <Compile Include="ViewModels\BetsDetailViewModel.cs" />
+    <Compile Include="ViewModels\EmailTemplateViewModel.cs" />
     <Compile Include="ViewModels\MyBetsViewModel.cs" />
     <Compile Include="ViewModels\BetsIndexViewModel.cs" />
     <Compile Include="ViewModels\NewBetViewModel.cs" />
@@ -440,6 +441,7 @@
     <Content Include="Content\DataTables\images\sort_desc.png" />
     <Content Include="Content\DataTables\images\sort_desc_disabled.png" />
     <Content Include="Content\DataTables\swf\flashExport.swf" />
+    <Content Include="EmailTemplate.html" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
