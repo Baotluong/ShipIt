@@ -106,6 +106,7 @@ namespace ShipIt.Controllers
                 User1Condition = user1Conditions.WinCondition,
                 User2 = user2Conditions.UserEmail,
                 User2Condition = user2Conditions.WinCondition,
+                StartDate = betInDb.StartDate,
                 EndDate = betInDb.EndTime,
                 BetStatus = Enum.GetName(typeof(BetStatus), betInDb.BetStatus),
                 UserBetStatus = (myConditions != null) ? Enum.GetName(typeof(UserBetStatus), myConditions.UserBetStatus) : "NotUsersBet",
@@ -203,7 +204,7 @@ namespace ShipIt.Controllers
                         User2Condition = newBet.Conditions.ElementAt(1).WinCondition,
                         Url = "http://localhost:63907/bets/details/" + newBet.Id.ToString(),
                         Description = newBet.Conditions.ElementAt(0).UserEmail + " wins if " + newBet.Conditions.ElementAt(0).WinCondition
-                        + ", and " + newBet.Conditions.ElementAt(1).UserEmail + " wins if " + newBet.Conditions.ElementAt(1).WinCondition,
+                        + ", and " + newBet.Conditions.ElementAt(1).UserEmail + " wins if " + newBet.Conditions.ElementAt(1).WinCondition + ".",
                     };
 
                     SendEmail(emailObject);
@@ -300,6 +301,8 @@ namespace ShipIt.Controllers
                 return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
 
             betInDb.ProposedBetWinner = proposedBetWinner;
+            if (betInDb.ProposedBetWinner != currentUser.Email)
+                return RedirectToAction("AcceptWinner", "Bets", new { betId = betId });
 
             foreach(Condition condition in betInDb.Conditions)
             {
@@ -325,7 +328,7 @@ namespace ShipIt.Controllers
             }
 
             _context.SaveChanges();
-            return RedirectToAction("Details", "Bets", new { id = betId });
+            return RedirectToAction("Details", "Bets", new { Id = betInDb.Id });
         }
 
         public ActionResult AcceptWinner(string betId)
@@ -334,7 +337,8 @@ namespace ShipIt.Controllers
             var currentUser = GetCurrentUser();
 
             //Catches if the user is on the right status
-            if (betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanAcceptWinner)
+            if (betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanAcceptWinner &&
+                betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanProposeWinner)
                 return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
 
             betInDb.BetWinner = betInDb.ProposedBetWinner;

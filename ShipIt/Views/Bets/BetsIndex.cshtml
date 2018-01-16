@@ -13,12 +13,10 @@
             <th>Status</th>
             <th>Bet</th>
             <th>Wager</th>
-            <th>Bettor 1</th>
-            <th>Bettor 1 Wins If</th>
-            <th>Bettor 2</th>
-            <th>Bettor 2 Wins If</th>
-            <th>Start Date</th>
-            <th>End Date</th>
+            <th><span class="glyphicon glyphicon-user" aria-hidden="true"></span>1</th>
+            <th><span class="glyphicon glyphicon-user" aria-hidden="true"></span>1 Wins If</th>
+            <th><span class="glyphicon glyphicon-user" aria-hidden="true"></span>2</th>
+            <th><span class="glyphicon glyphicon-user" aria-hidden="true"></span>2 Wins If</th>
         </tr>
     </thead>
     <tbody></tbody>
@@ -34,9 +32,13 @@
                     url: "/api/bets/@Model.id",
                     dataSrc: ""
                 },
+                responsive: true,
                 columns: [
                     {
-                        data: "BetStatus"
+                        data: "BetStatus",
+                        render: function (data) {
+                            return data + "<span class='glyphicon glyphicon-collapse-down visible-xs' aria-hidden='true'></span>";
+                        }
                     },
                     {
                         data: "BetPremise",
@@ -60,12 +62,6 @@
                     },
                     {
                         data: "User2Condition",
-                    },
-                    {
-                        data: "StartDate",
-                    },
-                    {
-                        data: "EndDate"
                     },
                 ]
             });
