@@ -18,13 +18,13 @@ namespace ShipIt.Controllers.API
             _context = new ApplicationDbContext();
         }
 
-        [Route("api/bets/{id?}")]
-        public IHttpActionResult GetMyBets(string id = null)
+        [Route("api/bets/{email?}")]
+        public IHttpActionResult GetMyBets(string email = null)
         {
             string currentUserId = User.Identity.GetUserId();
             ApplicationUser currentUser = _context.Users.Single(u => u.Id == currentUserId);
 
-            ApplicationUser indexUser = (id == null) ? currentUser : _context.Users.Single(u => u.Id == id);
+            ApplicationUser indexUser = (email == null) ? currentUser : _context.Users.Single(u => u.Email == email);
 
             var indexQuery = indexUser.Bets.Select(b => new MyBetsViewModel()).ToList();
 

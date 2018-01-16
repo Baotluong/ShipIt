@@ -46,3 +46,43 @@ textarea {
     font-weight: bold;
     font-size: 12px;
 }
+
+.index-status-bar-button-group{
+    margin-bottom: 15px;
+}
+
+.large-status-button {
+    display: inline-block;
+}
+
+.small-status-button {
+    display: none;
+}
+
+.status-message:not(#propose) {
+    display: none;
+}
+
+.status-message{
+    font-size: 3vw;
+    margin-left: 4.5vw;
+}
+
+@media (max-width: 426px) {
+    .large-status-button {
+        display: none;
+    }
+
+    .small-status-button {
+        font-size: 11px;
+        display: inline-block;
+    }
+
+    .index-status-bar-button-group {
+        margin-bottom: 10px;
+    }
+
+    .status-message {
+        font-size: 4vw;
+    }
+}
