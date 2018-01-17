@@ -5,9 +5,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>My Bets</h2>
+@if (Model.email == null)
+{
+    <h2>My Bets</h2>
+}else{
+    <h2>@Model.email's Bets</h2>
+}
 
-<table id="bets" class="table table-bordered table-hover">
+<table id="bets" class="bets table table-bordered table-hover">
     <thead>
         <tr>
             <th>Status</th>
@@ -17,6 +22,7 @@
             <th><span class="glyphicon glyphicon-user" aria-hidden="true"></span>1 Wins If</th>
             <th><span class="glyphicon glyphicon-user" aria-hidden="true"></span>2</th>
             <th><span class="glyphicon glyphicon-user" aria-hidden="true"></span>2 Wins If</th>
+            <th>Date Created</th>
         </tr>
     </thead>
     <tbody></tbody>
@@ -24,21 +30,31 @@
 
 @section scripts
 {
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" />
+
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.1.1/js/responsive.bootstrap.min.js"></script>
     <script>
-        //TODO: Not sure how to pass the id from viewmodel to grab other users bet index
         $(document).ready(function () {
             var table = $("#bets").DataTable({
                 ajax: {
-                    url: "/api/bets/@Model.id/",
-                    dataSrc: ""
+                    url: "/api/bets/@Model.email/",
+                    dataSrc: "",
+                    error: function () {
+                        bootbox.alert({
+                            message: "This user does not have any bets.",
+                            backdrop: true
+                        });
+                    }
                 },
+                order: [[7, "desc"]],
                 responsive: true,
                 columns: [
                     {
                         data: "BetStatus",
-                        render: function (data) {
-                            return data + "<span class='glyphicon glyphicon-collapse-down visible-xs' aria-hidden='true'></span>";
-                        }
                     },
                     {
                         data: "BetPremise",
@@ -49,7 +65,8 @@
                         }
                     },
                     {
-                        data: "BetWager"
+                        data: "BetWager",
+                        sDefaultContent: "None"
                     },
                     {
                         data: "User1",
@@ -73,6 +90,9 @@
                     {
                         data: "User2Condition",
                     },
+                    {
+                        data: "StartDate"
+                    }
                 ]
             });
         });

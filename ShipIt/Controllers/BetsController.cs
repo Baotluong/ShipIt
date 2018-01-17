@@ -38,7 +38,7 @@ namespace ShipIt.Controllers
         {
             var viewModel = new BetsIndexViewModel
             {
-                id = id
+                email = id
             };
 
             return View(viewModel);

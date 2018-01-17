@@ -9,6 +9,6 @@ namespace ShipIt.ViewModels
 {
     public class BetsIndexViewModel
     {
-        public string id { get; set; }
+        public string email { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace ShipIt.Utilities
     {
         public CustomDateTimeConverter()
         {
-            base.DateTimeFormat = "MM-dd-yyyy";
+            base.DateTimeFormat = "MM/dd/yyyy";
         }
     }
 }

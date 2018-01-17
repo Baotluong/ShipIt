@@ -68,6 +68,11 @@ textarea {
     margin-left: 4.5vw;
 }
 
+table.bets {
+    border-collapse: collapse;
+    width: 100% !Important;
+}
+
 @media (max-width: 426px) {
     .large-status-button {
         display: none;
