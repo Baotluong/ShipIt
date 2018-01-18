@@ -64,18 +64,8 @@ namespace ShipIt.Controllers
 
         public string GetUserBetStatusMessage(UserBetStatus userBetStatus)
         {
-            var userBetStatusMessage = new Dictionary<UserBetStatus, string> {
-                { UserBetStatus.WaitingForAcceptBet, "Waiting for other(s) to accept Bet."},
-                { UserBetStatus.CanAcceptBet, "May accept Bet."},
-                { UserBetStatus.CanProposeWinner, "May propose Winner."},
-                { UserBetStatus.WaitingForAcceptWinner, "Waiting for other(s) to accept Winner."},
-                { UserBetStatus.CanAcceptWinner, "May accept Winner"},
-                { UserBetStatus.NeedsToSettle, "Waiting for other(s) to accept Settlement."},
-                { UserBetStatus.CanAcceptPaid, "May accept Settlement?"},
-                { UserBetStatus.Resolved, "Bet is Resolved."},
-            };
 
-            return userBetStatusMessage[userBetStatus];
+            return BetServices.GetUserBetStatusMessage(userBetStatus);
         }
 
         public ActionResult Details(string id, string errorMessage)
@@ -218,19 +208,14 @@ namespace ShipIt.Controllers
         {
             var currentUser = GetCurrentUser();
 
-            var conditionsQuery = _context.Conditions
+            List<Condition> conditionsQuery = _context.Conditions
                 .Include(c => c.Bet)
                 .Where(c => c.UserEmail == currentUser.Email)
                 .ToList();
 
             foreach (Condition condition in conditionsQuery)
             {
-                //Why don't these commented ones work
-                //var betInDb = _context.Bets.Single(b => b.Id == condition.Bet.Id).ApplicationUsers;
-                //var betInDb = _context.Bets.Where(b => b.Id == condition.Bet.Id).SingleOrDefault();
                 condition.Bet.ApplicationUsers.Add(currentUser);
-
-                //betInDb.ApplicationUsers.Add(currentUser);
             }
 
             _context.SaveChanges();
@@ -472,24 +457,6 @@ namespace ShipIt.Controllers
         {
             string body = this.PopulateBody(emailTemplateViewModel);
             this.SendHtmlFormattedEmail(emailTemplateViewModel.ToEmail, emailTemplateViewModel.Subject, body);
-        }
-
-        public ActionResult TestEmail()
-        {
-            var emailObject = new EmailTemplateViewModel
-            {
-                ToEmail = "baosapp@gmail.com",
-                UserName = "baosapp@gmail.com",
-                Subject = "You've been included in a bet! " + "BetPremise",
-                Title = "You've been included in a bet! " + "BetPremise",
-                Url = "http://localhost:63907/bets/details/" + "Id.ToString()",
-                Description = "Conditions.ElementAt(0).UserEmail" + " wins if " + "Conditions.ElementAt(0).WinCondition"
-                        + " and " +
-                        "Conditions.ElementAt(1).UserEmail@gmail.com" + " wins if " + "Conditions.ElementAt(1).WinCondition"
-            };
-
-            SendEmail(emailObject);
-            return RedirectToAction("BetsIndex", "Bets");
         }
     }
 }

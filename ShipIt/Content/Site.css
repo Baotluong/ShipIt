@@ -64,13 +64,27 @@ textarea {
 }
 
 .status-message{
-    font-size: 3vw;
+    font-size: 2.5vw;
     margin-left: 4.5vw;
 }
 
 table.bets {
     border-collapse: collapse;
     width: 100% !Important;
+}
+
+.vertical-alignment-helper {
+    display: table;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+}
+
+.vertical-align-center {
+    /* To center vertically */
+    display: table-cell;
+    vertical-align: middle;
+    pointer-events: none;
 }
 
 @media (max-width: 426px) {

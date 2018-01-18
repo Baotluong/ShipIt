@@ -10,6 +10,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using ShipIt.Models;
+using ShipIt.Services;
 
 namespace ShipIt.Controllers
 {
@@ -80,6 +81,14 @@ namespace ShipIt.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    if (!await UserManager.IsEmailConfirmedAsync((await UserManager.FindByNameAsync(model.Email)).Id))
+                    {
+                        Session.Abandon();
+                        AuthenticationManager.SignOut();
+                        //TODO: make a resend email confirmation
+                        ModelState.AddModelError("", "Please confirm your email address");
+                        return View(model);
+                    }
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -156,15 +165,28 @@ namespace ShipIt.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                    //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("ClaimBetsAfterRegistering", "Bets");
+                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var callbackUrl = Url.Action(
+                       "ConfirmEmail", "Account",
+                       new { userId = user.Id, code = code },
+                       protocol: Request.Url.Scheme);
+
+                    var message = new IdentityMessage
+                    {
+                        Destination = user.Email,
+                        Body = "Please confirm your ShipIt account by clicking this link: " + callbackUrl,
+                        Subject = "ShipIt - Please confirm your account"
+                    };
+
+                    EmailServices.sendMail(message);
+                    // ViewBag.Link = callbackUrl;   // Used only for initial demo.
+                    return View("Login");
+                    //return RedirectToAction("ClaimBetsAfterRegistering", "Bets");
                 }
                 AddErrors(result);
             }
@@ -182,8 +204,28 @@ namespace ShipIt.Controllers
             {
                 return View("Error");
             }
-            var result = await UserManager.ConfirmEmailAsync(userId, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            IdentityResult result;
+            try
+            {
+                result = await UserManager.ConfirmEmailAsync(userId, code);
+            }
+            catch (InvalidOperationException ioe)
+            {
+                // ConfirmEmailAsync throws when the userId is not found.
+                ViewBag.errorMessage = ioe.Message;
+                return View("Error");
+            }
+
+            if (result.Succeeded)
+            {
+                //return View();
+                return RedirectToAction("ClaimBetsAfterRegistering", "Bets");
+            }
+
+            // If we got this far, something failed.
+            AddErrors(result);
+            ViewBag.errorMessage = "ConfirmEmail failed";
+            return View("Error");
         }
 
         //
