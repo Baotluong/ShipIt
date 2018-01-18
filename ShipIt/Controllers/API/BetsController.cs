@@ -19,27 +19,27 @@ namespace ShipIt.Controllers.API
         }
 
         [Route("api/bets/{email?}")]
-        public IHttpActionResult GetMyBets(string email = null)
+        public IHttpActionResult GetBetsIndex(string email = null)
         {
             string currentUserId = User.Identity.GetUserId();
             ApplicationUser currentUser = _context.Users.Single(u => u.Id == currentUserId);
 
             ApplicationUser indexUser = (email == null) ? currentUser : _context.Users.Single(u => u.Email == email);
 
-            var indexQuery = indexUser.Bets.Select(b => new MyBetsViewModel()).ToList();
+            var indexQuery = indexUser.Bets.Select(b => new BetsIndexViewModel()).ToList();
 
             var betsQueryIsBetCreator = _context.Bets.Where(b => b.BetCreatorId == indexUser.Id).ToList();
             var betsQueryIsABettor = indexUser.Bets.ToList();
             var betsQuery = betsQueryIsABettor.Union(betsQueryIsBetCreator).ToList();
 
-            var myBetsViewModelList = new List<MyBetsViewModel>();
+            var betsIndexViewModelList = new List<BetsIndexViewModel>();
 
             foreach (Bet bet in betsQuery)
             {
                 var User1InDb = bet.Conditions.ElementAt(0);
                 var User2InDb = bet.Conditions.ElementAt(1);
 
-                var vm = new MyBetsViewModel()
+                var betsIndexViewModel = new BetsIndexViewModel()
                 {
                     BetWager = bet.BetWager,
                     BetPremise = bet.BetPremise,
@@ -50,12 +50,13 @@ namespace ShipIt.Controllers.API
                     EndDate = bet.EndTime,
                     StartDate = bet.StartDate,
                     BetId = bet.Id.ToString(),
-                    BetStatus = Enum.GetName(typeof(BetStatus), bet.BetStatus)
+                    BetStatus = Enum.GetName(typeof(BetStatus), bet.BetStatus),
+                    BetWinner = (bet.ProposedBetWinner == null) ? "No Winner Yet" : (bet.BetWinner == null) ? bet.ProposedBetWinner+"*": bet.BetWinner
                 };
-                myBetsViewModelList.Add(vm);
+                betsIndexViewModelList.Add(betsIndexViewModel);
             }
 
-            return Ok(myBetsViewModelList);
+            return Ok(betsIndexViewModelList);
         }
 
 

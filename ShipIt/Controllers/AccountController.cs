@@ -185,7 +185,7 @@ namespace ShipIt.Controllers
 
                     EmailServices.sendMail(message);
                     // ViewBag.Link = callbackUrl;   // Used only for initial demo.
-                    return View("Login");
+                    return View("ConfirmEmailAfterRegister");
                     //return RedirectToAction("ClaimBetsAfterRegistering", "Bets");
                 }
                 AddErrors(result);
@@ -219,6 +219,8 @@ namespace ShipIt.Controllers
             if (result.Succeeded)
             {
                 //return View();
+                var user = UserManager.FindById(userId);
+                await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 return RedirectToAction("ClaimBetsAfterRegistering", "Bets");
             }
 

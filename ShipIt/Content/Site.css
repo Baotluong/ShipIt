@@ -73,6 +73,12 @@ table.bets {
     width: 100% !Important;
 }
 
+td {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .vertical-alignment-helper {
     display: table;
     height: 100%;

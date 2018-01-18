@@ -38,7 +38,7 @@ namespace ShipIt.Controllers
         {
             var viewModel = new BetsIndexViewModel
             {
-                email = id
+                LookUpEmail = id
             };
 
             return View(viewModel);
@@ -90,7 +90,7 @@ namespace ShipIt.Controllers
             var betsDetailViewModel = new BetsDetailViewModel
             {
                 BetId = betInDb.Id.ToString(),
-                BetWager = betInDb.BetWager,
+                BetWager = (betInDb.BetWager != null) ? betInDb.BetWager : "No wager was made.",
                 BetPremise = betInDb.BetPremise,
                 User1 = user1Conditions.UserEmail,
                 User1Condition = user1Conditions.WinCondition,
@@ -349,24 +349,25 @@ namespace ShipIt.Controllers
                     emailObject.Title = betInDb.ProposedBetWinner + " has won!";
                     emailObject.Subject = betInDb.ProposedBetWinner + " has been declared the winner!";
                     emailObject.Description = "The bet is resolved! No wager was set for this bet.";
+                    betInDb.BetStatus = BetStatus.Settled;
                 }
                 else if(condition.UserBetStatus == UserBetStatus.CanAcceptPaid)
                 {
                     emailObject.Title = betInDb.ProposedBetWinner + " has won!";
                     emailObject.Subject = betInDb.ProposedBetWinner + " has been declared the winner of: " + betInDb.BetPremise;
                     emailObject.Description = "You have won the bet! Update the bet when the wager of: " + betInDb.BetWager + " has been settled.";
+                    betInDb.BetStatus = BetStatus.Completed;
                 }
                 else
                 {
                     emailObject.Title = betInDb.ProposedBetWinner + " has won!";
                     emailObject.Subject = betInDb.ProposedBetWinner + " has been declared the winner of: " + betInDb.BetPremise;
                     emailObject.Description = betInDb.ProposedBetWinner + "has won the bet! Please settle the wager of: " + betInDb.BetWager + " with him/her.";
+                    betInDb.BetStatus = BetStatus.Completed;
                 }
 
                 SendEmail(emailObject);
             }
-
-            betInDb.BetStatus = BetStatus.Completed;
 
             _context.SaveChanges();
 

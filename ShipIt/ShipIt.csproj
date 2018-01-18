@@ -279,7 +279,6 @@
     <Compile Include="Utilities\CustomDateTimeConverter.cs" />
     <Compile Include="ViewModels\BetsDetailViewModel.cs" />
     <Compile Include="ViewModels\EmailTemplateViewModel.cs" />
-    <Compile Include="ViewModels\MyBetsViewModel.cs" />
     <Compile Include="ViewModels\BetsIndexViewModel.cs" />
     <Compile Include="ViewModels\NewBetViewModel.cs" />
   </ItemGroup>
@@ -367,6 +366,7 @@
     <Content Include="Views\Bets\BetForm.cshtml" />
     <Content Include="Views\Bets\Details.cshtml" />
     <Content Include="Views\Bets\BetsIndex.cshtml" />
+    <Content Include="Views\Account\ConfirmEmailAfterRegister.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

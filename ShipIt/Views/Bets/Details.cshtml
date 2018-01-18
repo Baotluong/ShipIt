@@ -22,10 +22,15 @@
         <div class="details-information">@Model.UserBetStatusMessage</div>
     }
 
-    @if (Model.EndDate != null)
+    @if (Model.BetWinner != null)
     {
-        <div class="details-label">End Date:</div>
-        <div class="details-information">@Model.BetWager</div>
+        <div class="details-label">Winner:</div>
+        <div class="details-information">@Model.BetWinner</div>
+    }
+    else if (Model.ProposedBetWinner != null)
+    {
+        <div class="details-label">Proposed Winner:</div>
+        <div class="details-information">Model.ProposedBetWinner</div>
     }
 
     <div class="details-label"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>1</div>
@@ -51,15 +56,15 @@
     @switch (Model.UserBetStatus)
     {
         case "CanAcceptBet":
-            <button class="btn btn-primary confirm" id="can-accept-bet">Accept Bet</button>
+            <button class="btn btn-primary confirm" id="can-accept-bet" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">Accept Bet</button>
             break;
 
         case "WaitingForAcceptBet":
             break;
 
         case "CanProposeWinner":
-            <button class="btn btn-primary confirm" id="can-propose-winner-1">@Model.User1 Won</button>
-            <button class="btn btn-primary confirm" id="can-propose-winner-2">@Model.User2 Won</button>
+            <button class="btn btn-primary confirm" id="can-propose-winner-1" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">@Model.User1 Won</button>
+            <button class="btn btn-primary confirm" id="can-propose-winner-2" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">@Model.User2 Won</button>
             break;
 
         case "WaitingForAcceptWinner":
@@ -68,13 +73,13 @@
         case "CanAcceptWinner":
             if (Model.ProposedBetWinner == Model.User1)
             {
-                <button class="btn btn-success confirm" id="can-accept-winner">Yes, @Model.ProposedBetWinner Won</button>
-                <button class="btn btn-danger confirm" id="can-propose-winner-1">No, @Model.User2 Won</button>
+                <button class="btn btn-success confirm" id="can-accept-winner" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">Yes, @Model.ProposedBetWinner Won</button>
+                <button class="btn btn-danger confirm" id="can-propose-winner-1" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">No, @Model.User2 Won</button>
             }
             else
             {
-                <button class="btn btn-success confirm" id="can-accept-winner">Yes, @Model.ProposedBetWinner Won</button>
-                <button class="btn btn-danger confirm" id="can-propose-winner-2">No, @Model.User1 Won</button>
+                <button class="btn btn-success confirm" id="can-accept-winner" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">Yes, @Model.ProposedBetWinner Won</button>
+                <button class="btn btn-danger confirm" id="can-propose-winner-2" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">No, @Model.User1 Won</button>
             }
             break;
 
@@ -82,7 +87,7 @@
             break;
 
         case "CanAcceptPaid":
-            <button class="btn btn-primary confirm" id="can-accept-paid">Bet has been Settled</button>
+            <button class="btn btn-primary confirm" id="can-accept-paid" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">Bet has been Settled</button>
             break;
 
         case "Resolved":
@@ -116,7 +121,7 @@
                     },
                     callback: function (result) {
                         if (result) {
-                            console.log("result is true");
+                            $(".confirm").button("loading");
                             switch (id) {
                                 case "can-accept-bet":
                                     window.location.href = '@Url.Action("AcceptBet", "Bets", new { betId = Model.BetId })';
