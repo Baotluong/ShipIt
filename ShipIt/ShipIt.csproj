@@ -273,12 +273,12 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\BetServices.cs" />
-    <Compile Include="Services\EmailServices.cs" />
+    <Compile Include="Services\BetService.cs" />
+    <Compile Include="Services\EmailService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\CustomDateTimeConverter.cs" />
     <Compile Include="ViewModels\BetsDetailViewModel.cs" />
-    <Compile Include="ViewModels\EmailTemplateViewModel.cs" />
+    <Compile Include="ViewModels\BetStatusEmailViewModel.cs" />
     <Compile Include="ViewModels\BetsIndexViewModel.cs" />
     <Compile Include="ViewModels\NewBetViewModel.cs" />
   </ItemGroup>
@@ -294,7 +294,7 @@
     <Content Include="Content\Images\sort_both.png" />
     <Content Include="Content\Images\sort_desc.png" />
     <Content Include="Content\Images\sort_desc_disabled.png" />
-    <Content Include="EmailTemplate.html" />
+    <Content Include="Views\Bets\EmailTemplate.html" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />

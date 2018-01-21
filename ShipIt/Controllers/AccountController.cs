@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -19,9 +16,12 @@ namespace ShipIt.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private IEmailService emailService;
 
         public AccountController()
         {
+            //Dont Understand Problem
+            emailService = new EmailService();
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
@@ -176,17 +176,9 @@ namespace ShipIt.Controllers
                        new { userId = user.Id, code = code },
                        protocol: Request.Url.Scheme);
 
-                    var message = new IdentityMessage
-                    {
-                        Destination = user.Email,
-                        Body = "Please confirm your ShipIt account by clicking this link: " + callbackUrl,
-                        Subject = "ShipIt - Please confirm your account"
-                    };
-
-                    EmailServices.sendMail(message);
+                    emailService.ConfirmAccountFormatEmail(user.Email, callbackUrl);
                     // ViewBag.Link = callbackUrl;   // Used only for initial demo.
                     return View("ConfirmEmailAfterRegister");
-                    //return RedirectToAction("ClaimBetsAfterRegistering", "Bets");
                 }
                 AddErrors(result);
             }

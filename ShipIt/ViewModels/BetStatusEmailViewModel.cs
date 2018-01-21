@@ -5,9 +5,9 @@ using System.Web;
 
 namespace ShipIt.ViewModels
 {
-    public class EmailTemplateViewModel
+    public class BetStatusEmailViewModel
     {
-        public string ToEmail { get; set; }
+        public string RecipientEmail { get; set; }
 
         public string Subject { get; set; }
 

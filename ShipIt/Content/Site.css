@@ -68,7 +68,7 @@ textarea {
     margin-left: 4.5vw;
 }
 
-table.bets {
+.bets {
     border-collapse: collapse;
     width: 100% !Important;
 }

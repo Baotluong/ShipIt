@@ -1,30 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using ShipIt.Models;
 using ShipIt.ViewModels;
 using Microsoft.AspNet.Identity;
-using System.Data.Entity;
-using System.Net.Mail;
-using System.IO;
-using System.Configuration;
 using ShipIt.Services;
 
 namespace ShipIt.Controllers
 {
     public class BetsController : Controller
     {
-        private ApplicationDbContext _context;
+        private IBetService betService;
+        private IEmailService emailService;
 
         public BetsController()
         {
-            _context = new ApplicationDbContext();
+            betService = new BetService();
+            emailService = new EmailService();
         }
 
         protected override void Dispose(bool disposing)
         {
-            _context.Dispose();
+            betService.Dispose();
+        }
+
+        public string GetCurrentUserId()
+        {
+            return User.Identity.GetUserId();
         }
 
         // GET: Bet
@@ -44,34 +46,10 @@ namespace ShipIt.Controllers
             return View(viewModel);
         }
 
-        private ApplicationUser GetCurrentUser()
-        {
-            string currentUserId = User.Identity.GetUserId();
-            ApplicationUser currentUser = _context.Users.Single(u => u.Id == currentUserId);
-
-            return currentUser;
-            //compressing the lines to below does not work. Not sure why.
-            //return _context.Users.Single(u => u.Id == User.Identity.GetUserId());
-        }
-
-        private Bet GetBet(string betId)
-        {
-            return _context.Bets
-                .Include(b => b.Conditions)
-                .Include(b => b.ApplicationUsers)
-                .Single(b => b.Id.ToString() == betId);
-        }
-
-        public string GetUserBetStatusMessage(UserBetStatus userBetStatus)
-        {
-
-            return BetServices.GetUserBetStatusMessage(userBetStatus);
-        }
-
         public ActionResult Details(string id, string errorMessage)
         {
-            var betInDb = GetBet(id);
-            var currentUser = GetCurrentUser();
+            var betInDb = betService.GetBet(id);
+            var currentUser = betService.GetCurrentUser(GetCurrentUserId());
 
             if (betInDb == null)
                 return HttpNotFound();
@@ -100,7 +78,8 @@ namespace ShipIt.Controllers
                 EndDate = betInDb.EndTime,
                 BetStatus = Enum.GetName(typeof(BetStatus), betInDb.BetStatus),
                 UserBetStatus = (myConditions != null) ? Enum.GetName(typeof(UserBetStatus), myConditions.UserBetStatus) : "NotUsersBet",
-                UserBetStatusMessage = (myConditions != null) ? GetUserBetStatusMessage(myConditions.UserBetStatus) : Enum.GetName(typeof(BetStatus), betInDb.BetStatus),
+                UserBetStatusMessage = (myConditions != null) ?
+                            betService.GetUserBetStatusMessage(myConditions.UserBetStatus) : Enum.GetName(typeof(BetStatus), betInDb.BetStatus),
                 currentUserEmail = currentUser.Email,
                 BetWinner = betInDb.BetWinner,
                 ProposedBetWinner = betInDb.ProposedBetWinner,
@@ -114,7 +93,7 @@ namespace ShipIt.Controllers
         {
             var viewModel = new NewBetViewModel
             {
-                CurrentUserEmail = GetCurrentUser().Email
+                CurrentUserEmail = betService.GetCurrentUser(GetCurrentUserId()).Email
             };
 
             return View("BetForm", viewModel);
@@ -123,67 +102,17 @@ namespace ShipIt.Controllers
         [HttpPost]
         public ActionResult Save(NewBetViewModel newBetViewModel)
         {
-            var currentUser = GetCurrentUser();
-
-            if (!ModelState.IsValid)
-            {
-                var viewModel = new NewBetViewModel
-                {
-                    CurrentUserEmail = currentUser.Email
-                };
-                return View("BetForm", viewModel);
-            }
-
-            var newBet = new Bet();
-
-            var newBetUserConditions= new List<KeyValuePair<string, string>>() {
-                new KeyValuePair<string, string>(newBetViewModel.User1, newBetViewModel.User1Condition),
-                new KeyValuePair<string, string>(newBetViewModel.User2, newBetViewModel.User2Condition)
-            };
-
-            List<ApplicationUser> getUsersToBeAddedToBet = new List<ApplicationUser>();
-            List<Condition> newConditionsToBeAddedToBet = new List<Condition>();
-
-            foreach (KeyValuePair<string, string> userConditions in newBetUserConditions)
-            {
-                var getUserInDb = _context.Users
-                    .Where(u => u.Email == userConditions.Key).SingleOrDefault();
-
-                if (getUserInDb != null)
-                    getUsersToBeAddedToBet.Add(getUserInDb);
-
-                var newCondition = new Condition()
-                {
-                    WinCondition = userConditions.Value,
-                    Bet = newBet,
-                    //Another Hack. Talk to Bryce
-                    //ApplicationUser = (UserinDb == null) ? null : UserinDb,
-                    UserEmail = userConditions.Key,
-                    UserBetStatus = (currentUser.Email == userConditions.Key) ? UserBetStatus.WaitingForAcceptBet : UserBetStatus.CanAcceptBet, 
-                };
-                newConditionsToBeAddedToBet.Add(newCondition);
-            }
-
-            newBet.StartDate = DateTime.Now;
-            newBet.BetStatus = BetStatus.Proposed;
-            newBet.EndTime = newBetViewModel.EndTime;
-            newBet.BetWager = newBetViewModel.BetWager;
-            newBet.ApplicationUsers = getUsersToBeAddedToBet;
-            newBet.BetPremise = newBetViewModel.BetPremise;
-            newBet.BetCreatorId = currentUser.Id;
-            newBet.Conditions = newConditionsToBeAddedToBet;
-
-            _context.Bets.Add(newBet);
-            _context.SaveChanges();
+            Bet newBet = betService.SaveBet(GetCurrentUserId(), newBetViewModel);
+            ApplicationUser currentUser = betService.GetCurrentUser(GetCurrentUserId());
 
             //Email all other users of bet
-            foreach(Condition condition in newBet.Conditions)
+            foreach (Condition condition in newBet.Conditions)
             {
-                if(condition.UserEmail != currentUser.Email)
+                if (condition.UserEmail != currentUser.Email)
                 {
-                    var emailObject = new EmailTemplateViewModel
+                    var emailViewModel = new BetStatusEmailViewModel
                     {
-                        ToEmail = condition.UserEmail,
+                        RecipientEmail = condition.UserEmail,
                         UserName = condition.UserEmail,
                         Subject = "You've been included in a bet: " + newBet.BetPremise + "!",
                         Title = "You've been included in a bet! ",
@@ -197,267 +126,80 @@ namespace ShipIt.Controllers
                         + ", and " + newBet.Conditions.ElementAt(1).UserEmail + " wins if " + newBet.Conditions.ElementAt(1).WinCondition + ".",
                     };
 
-                    SendEmail(emailObject);
+                    emailService.BetStatusFormatEmail(emailViewModel);
                 }
             }
-            
+
             return RedirectToAction("BetsIndex", "Bets");
         }
 
         public ActionResult ClaimBetsAfterRegistering()
         {
-            var currentUser = GetCurrentUser();
+            betService.ClaimBetsAfterRegistering(GetCurrentUserId());
 
-            List<Condition> conditionsQuery = _context.Conditions
-                .Include(c => c.Bet)
-                .Where(c => c.UserEmail == currentUser.Email)
-                .ToList();
-
-            foreach (Condition condition in conditionsQuery)
-            {
-                condition.Bet.ApplicationUsers.Add(currentUser);
-            }
-
-            _context.SaveChanges();
             return RedirectToAction("BetsIndex", "Bets");
         }
 
         public ActionResult AcceptBet(string betId)
         {
-            var betInDb = GetBet(betId);
-            var currentUser = GetCurrentUser();
-
-            //Reloads if user is not on expected status
-            if(betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanAcceptBet)
-                 return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
-
-            betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus = UserBetStatus.WaitingForAcceptBet;
-
-            bool changeStatusToActive = true;
-            foreach (Condition condition in betInDb.Conditions)
+            try
             {
-                if(condition.UserBetStatus == UserBetStatus.CanAcceptBet)
-                    changeStatusToActive = false;
+                betService.AcceptBet(GetCurrentUserId(), betId);
+            }
+            catch(InvalidOperationException ex)
+            {
+                return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = ex });
             }
 
-            if(changeStatusToActive == true)
-            {
-                betInDb.BetStatus = BetStatus.Active;
-                foreach (Condition condition in betInDb.Conditions)
-                {
-                    condition.UserBetStatus = UserBetStatus.CanProposeWinner;
-                    
-                    //Emails all other users of bet
-                    if (condition.UserEmail != currentUser.Email)
-                    {
-                        var emailObject = new EmailTemplateViewModel
-                        {
-                            ToEmail = condition.UserEmail,
-                            UserName = condition.UserEmail,
-                            Subject = betInDb.BetPremise + " is now active!",
-                            Title = "This bet is now active!",
-                            BetPremise = betInDb.BetPremise,
-                            User1 = betInDb.Conditions.ElementAt(0).UserEmail,
-                            User1Condition = betInDb.Conditions.ElementAt(0).WinCondition,
-                            User2 = betInDb.Conditions.ElementAt(1).UserEmail,
-                            User2Condition = betInDb.Conditions.ElementAt(1).WinCondition,
-                            Url = "http://localhost:63907/bets/details/" + betInDb.Id.ToString(),
-                            Description = betInDb.Conditions.ElementAt(0).UserEmail + " and " + betInDb.Conditions.ElementAt(1).UserEmail 
-                            + " have accepted the terms of the bet. Follow the link below to record the winner after the bet ends!" 
-                        };
-
-                        SendEmail(emailObject);
-                    }
-                }
-            }
-            
-            _context.SaveChanges();
             return RedirectToAction("Details", "Bets", new { id = betId });
         }
 
         public ActionResult ProposeWinner(string proposedBetWinner, string betId)
         {
-            var betInDb = GetBet(betId);
-            var currentUser = GetCurrentUser();
-
-            //Catches if the user is on the right status
-            if (betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanProposeWinner &&
-                betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanAcceptWinner)
-                return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
-
-            betInDb.ProposedBetWinner = proposedBetWinner;
-            if (betInDb.ProposedBetWinner != currentUser.Email)
-                return RedirectToAction("AcceptWinner", "Bets", new { betId = betId });
-
-            foreach(Condition condition in betInDb.Conditions)
+            try
             {
-                condition.UserBetStatus = (condition.UserEmail == proposedBetWinner) ? UserBetStatus.WaitingForAcceptWinner : UserBetStatus.CanAcceptWinner;
+                betService.ProposeWinner(GetCurrentUserId(), proposedBetWinner, betId);
 
-                var emailObject = new EmailTemplateViewModel
-                {
-                    ToEmail = condition.UserEmail,
-                    UserName = condition.UserEmail,
-                    Subject = proposedBetWinner + " has been proposed as the winner of " + betInDb.BetPremise,
-                    Title = "Has "+ proposedBetWinner + " won " + betInDb.BetPremise + "?",
-                    BetPremise = betInDb.BetPremise,
-                    User1 = betInDb.Conditions.ElementAt(0).UserEmail,
-                    User1Condition = betInDb.Conditions.ElementAt(0).WinCondition,
-                    User2 = betInDb.Conditions.ElementAt(1).UserEmail,
-                    User2Condition = betInDb.Conditions.ElementAt(1).WinCondition,
-                    Url = "http://localhost:63907/bets/details/" + betInDb.Id.ToString(),
-                    Description = currentUser.Email + " has proposed that " + proposedBetWinner
-                    + " won this bet. Follow the link below to accept this result or propose a different result!"
-                };
+            } 
+            catch(InvalidOperationException ex)
+            {
+                return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = ex });
 
-                SendEmail(emailObject);
             }
 
-            _context.SaveChanges();
-            return RedirectToAction("Details", "Bets", new { Id = betInDb.Id });
+            return RedirectToAction("Details", "Bets", new { Id = betId });
         }
 
         public ActionResult AcceptWinner(string betId)
         {
-            var betInDb = GetBet(betId);
-            var currentUser = GetCurrentUser();
-
-            //Catches if the user is on the right status
-            if (betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanAcceptWinner &&
-                betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanProposeWinner)
-                return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
-
-            betInDb.BetWinner = betInDb.ProposedBetWinner;
-
-            foreach (Condition condition in betInDb.Conditions)
+            try
             {
-                condition.UserBetStatus = (betInDb.BetWager == null) ? condition.UserBetStatus = UserBetStatus.Resolved : (condition.UserEmail == betInDb.BetWinner) ? UserBetStatus.CanAcceptPaid : UserBetStatus.NeedsToSettle;
+                betService.AcceptWinner(GetCurrentUserId(), betId);
 
-                var emailObject = new EmailTemplateViewModel
-                {
-                    ToEmail = condition.UserEmail,
-                    UserName = condition.UserEmail,
-                    BetPremise = betInDb.BetPremise,
-                    User1 = betInDb.Conditions.ElementAt(0).UserEmail,
-                    User1Condition = betInDb.Conditions.ElementAt(0).WinCondition,
-                    User2 = betInDb.Conditions.ElementAt(1).UserEmail,
-                    User2Condition = betInDb.Conditions.ElementAt(1).WinCondition,
-                    Url = "http://localhost:63907/bets/details/" + betInDb.Id.ToString(),
-                };
-                    
-                if(condition.UserBetStatus == UserBetStatus.Resolved)
-                {
-                    emailObject.Title = betInDb.ProposedBetWinner + " has won!";
-                    emailObject.Subject = betInDb.ProposedBetWinner + " has been declared the winner!";
-                    emailObject.Description = "The bet is resolved! No wager was set for this bet.";
-                    betInDb.BetStatus = BetStatus.Settled;
-                }
-                else if(condition.UserBetStatus == UserBetStatus.CanAcceptPaid)
-                {
-                    emailObject.Title = betInDb.ProposedBetWinner + " has won!";
-                    emailObject.Subject = betInDb.ProposedBetWinner + " has been declared the winner of: " + betInDb.BetPremise;
-                    emailObject.Description = "You have won the bet! Update the bet when the wager of: " + betInDb.BetWager + " has been settled.";
-                    betInDb.BetStatus = BetStatus.Completed;
-                }
-                else
-                {
-                    emailObject.Title = betInDb.ProposedBetWinner + " has won!";
-                    emailObject.Subject = betInDb.ProposedBetWinner + " has been declared the winner of: " + betInDb.BetPremise;
-                    emailObject.Description = betInDb.ProposedBetWinner + "has won the bet! Please settle the wager of: " + betInDb.BetWager + " with him/her.";
-                    betInDb.BetStatus = BetStatus.Completed;
-                }
-
-                SendEmail(emailObject);
             }
+            catch (InvalidOperationException ex)
+            {
+                return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = ex });
 
-            _context.SaveChanges();
+            }
 
             return RedirectToAction("Details", "Bets", new { id = betId });
         }
 
         public ActionResult AcceptPaid(string betId)
         {
-            var betInDb = GetBet(betId);
-            var currentUser = GetCurrentUser();
-
-            //Catches if the user is on the right status
-            if (betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanAcceptPaid)
-                return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = "Please try again." });
-
-            foreach (Condition condition in betInDb.Conditions)
+            try
             {
-                condition.UserBetStatus = UserBetStatus.Resolved;
+                betService.AcceptPaid(GetCurrentUserId(), betId);
 
-                var emailObject = new EmailTemplateViewModel
-                {
-                    ToEmail = condition.UserEmail,
-                    UserName = condition.UserEmail,
-                    Subject = "The bet has been resolved! " + betInDb.BetWinner + " has won!",
-                    Title = "All users have settled the bet!",
-                    BetPremise = betInDb.BetPremise,
-                    User1 = betInDb.Conditions.ElementAt(0).UserEmail,
-                    User1Condition = betInDb.Conditions.ElementAt(0).WinCondition,
-                    User2 = betInDb.Conditions.ElementAt(1).UserEmail,
-                    User2Condition = betInDb.Conditions.ElementAt(1).WinCondition,
-                    Url = "http://localhost:63907/bets/details/" + betInDb.Id.ToString(),
-                    Description = "The bet is resolved! All wagers have been settled! Follow the link below to see the details or create a new bet."
-                };
-
-                SendEmail(emailObject);
             }
+            catch (InvalidOperationException ex)
+            {
+                return RedirectToAction("Details", "Bets", new { id = betId, errorMessage = ex });
 
-            betInDb.BetStatus = BetStatus.Settled;
-
-            _context.SaveChanges();
-
+            }
+            
             return RedirectToAction("Details", "Bets", new { id = betId });
-        }
-
-        private string PopulateBody(EmailTemplateViewModel vm)
-        {
-            string body = string.Empty;
-            using (StreamReader reader = new StreamReader(Server.MapPath("~/EmailTemplate.html")))
-            {
-                body = reader.ReadToEnd();
-            }
-            body = body.Replace("{UserName}", vm.UserName.Replace(".", "<span>.</span>"));
-            body = body.Replace("{Title}", vm.Title);
-            body = body.Replace("{Url}", vm.Url);
-            body = body.Replace("{Description}", vm.Description.Replace(".", "<span>.</span>"));
-            body = body.Replace("{BetPremise}", vm.BetPremise.Replace(".", "<span>.</span>"));
-            body = body.Replace("{User1}", vm.User1.Replace(".", "<span>.</span>"));
-            body = body.Replace("{User1Condition}", vm.User1Condition.Replace(".", "<span>.</span>"));
-            body = body.Replace("{User2}", vm.User2.Replace(".", "<span>.</span>"));
-            body = body.Replace("{User2Condition}", vm.User2Condition.Replace(".", "<span>.</span>"));
-            return body;
-        }
-
-        private void SendHtmlFormattedEmail(string recepientEmail, string subject, string body)
-        {
-            using (MailMessage mailMessage = new MailMessage())
-            {
-                mailMessage.From = new MailAddress(ConfigurationManager.AppSettings["EmailUserName"]);
-                mailMessage.Subject = subject;
-                mailMessage.Body = body;
-                mailMessage.IsBodyHtml = true;
-                mailMessage.To.Add(new MailAddress(recepientEmail));
-                SmtpClient smtp = new SmtpClient();
-                smtp.Host = ConfigurationManager.AppSettings["Host"];
-                smtp.EnableSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["EnableSsl"]);
-                System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
-                NetworkCred.UserName = ConfigurationManager.AppSettings["EmailUserName"];
-                NetworkCred.Password = ConfigurationManager.AppSettings["EmailPassword"];
-                smtp.UseDefaultCredentials = true;
-                smtp.Credentials = NetworkCred;
-                smtp.Port = int.Parse(ConfigurationManager.AppSettings["Port"]);
-                smtp.Send(mailMessage);
-            }
-        }
-
-        //protected void SendEmail(object sender, EventArgs e)
-        protected void SendEmail(EmailTemplateViewModel emailTemplateViewModel)
-        {
-            string body = this.PopulateBody(emailTemplateViewModel);
-            this.SendHtmlFormattedEmail(emailTemplateViewModel.ToEmail, emailTemplateViewModel.Subject, body);
         }
     }
 }
