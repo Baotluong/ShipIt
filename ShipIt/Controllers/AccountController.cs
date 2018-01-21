@@ -16,12 +16,11 @@ namespace ShipIt.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private IEmailService emailService;
+        private IShipItEmailService emailService;
 
         public AccountController()
         {
-            //Dont Understand Problem
-            emailService = new EmailService();
+            emailService = new ShipItEmailService();
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )

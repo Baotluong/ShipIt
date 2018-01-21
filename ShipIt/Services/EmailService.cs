@@ -6,22 +6,14 @@ using System.Configuration;
 
 namespace ShipIt.Services
 {
-    public interface IEmailService : IDisposable
+    public interface IShipItEmailService
     {
         void BetStatusFormatEmail(BetStatusEmailViewModel emailTemplateViewModel);
         void ConfirmAccountFormatEmail(string recepientEmail, string callbackUrl);
     }
 
-    public class EmailService : IEmailService
+    public class ShipItEmailService : IShipItEmailService
     {
-        public EmailService()
-        {
-        }
-
-        public void Dispose()
-        {
-        }
-
         private string BetStatusPopulateBody(BetStatusEmailViewModel vm)
         {
             string body = string.Empty;

@@ -11,12 +11,12 @@ namespace ShipIt.Controllers
     public class BetsController : Controller
     {
         private IBetService betService;
-        private IEmailService emailService;
+        private IShipItEmailService emailService;
 
         public BetsController()
         {
             betService = new BetService();
-            emailService = new EmailService();
+            emailService = new ShipItEmailService();
         }
 
         protected override void Dispose(bool disposing)

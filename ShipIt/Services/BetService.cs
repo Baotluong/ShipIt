@@ -23,12 +23,12 @@ namespace ShipIt.Services
     public class BetService : IBetService
     {
         private ApplicationDbContext _context;
-        private IEmailService emailService;
+        private IShipItEmailService emailService;
 
         public BetService()
         {
             _context = new ApplicationDbContext();
-            emailService = new EmailService();
+            emailService = new ShipItEmailService();
         }
 
         public void Dispose()
