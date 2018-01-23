@@ -3,10 +3,12 @@
 }
 
 <h2>@ViewBag.Title.</h2>
+<br />
+<br />
 <div>
     <p>
         Welcome to ShipIt!<br /><br />
         You need to confirm your e-mail in order to Log in. Simply click the link in the e-mail we just sent you.<br /><br />
-        Please @Html.ActionLink("Then click here to Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
+        @Html.ActionLink("Then click here to Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
     </p>
 </div>
