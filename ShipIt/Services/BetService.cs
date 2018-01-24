@@ -4,6 +4,9 @@ using System.Linq;
 using ShipIt.Models;
 using ShipIt.ViewModels;
 using System.Data.Entity;
+using System.Security.Policy;
+using System.Web.Http.Routing;
+using System.Web;
 
 namespace ShipIt.Services
 {
@@ -12,7 +15,7 @@ namespace ShipIt.Services
         ApplicationUser GetCurrentUser(string currentUserId);
         Bet GetBet(string betId);
         string GetUserBetStatusMessage(UserBetStatus userBetStatus);
-        Bet SaveBet(string currentUserId, NewBetViewModel newBetViewModel);
+        void SaveBet(string currentUserId, NewBetViewModel newBetViewModel);
         void ClaimBetsAfterRegistering(string currrentUserId);
         void AcceptBet(string currentUserId, string betId);
         void ProposeWinner(string currentUserId, string proposedBetWinner, string betId);
@@ -69,7 +72,7 @@ namespace ShipIt.Services
                 .Single(b => b.Id.ToString() == betId);
         }
 
-        public Bet SaveBet(string currentUserId, NewBetViewModel newBetViewModel)
+        public void SaveBet(string currentUserId, NewBetViewModel newBetViewModel)
         {
             var currentUser = GetCurrentUser(currentUserId);
 
@@ -113,7 +116,24 @@ namespace ShipIt.Services
             _context.Bets.Add(betToBeAdded);
             _context.SaveChanges();
 
-            return betToBeAdded;
+            foreach (Condition condition in betToBeAdded.Conditions)
+            {
+                if (condition.UserEmail != currentUser.Email)
+                {
+                    var emailObject = new BetStatusEmailViewModel
+                    {
+                        RecipientEmail = condition.UserEmail,
+                        UserName = condition.UserEmail,
+                        Subject = "You've been included in a bet: " + betToBeAdded.BetPremise + "!",
+                        Title = "You've been included in a bet! ",
+                        Description = betToBeAdded.Conditions.ElementAt(0).UserEmail + " wins if " + betToBeAdded.Conditions.ElementAt(0).WinCondition
+                        + ", and " + betToBeAdded.Conditions.ElementAt(1).UserEmail + " wins if " + betToBeAdded.Conditions.ElementAt(1).WinCondition + ".",
+                    };
+
+                    LoadBetStatusEmailViewModel(betToBeAdded, currentUser, emailObject);
+                    emailService.BetStatusFormatEmail(emailObject);
+                }
+            }
         }
 
         public void ClaimBetsAfterRegistering(string currentUserId)
@@ -138,7 +158,7 @@ namespace ShipIt.Services
             var betInDb = GetBet(betId);
             var currentUser = GetCurrentUser(currentUserId);
 
-            //Reloads if user is not on expected status
+            //Catches if the user is on the right status
             if (betInDb.Conditions.Single(c => c.UserEmail == currentUser.Email).UserBetStatus != UserBetStatus.CanAcceptBet)
                 throw new InvalidOperationException("Please try again");
 
@@ -158,7 +178,6 @@ namespace ShipIt.Services
                 {
                     condition.UserBetStatus = UserBetStatus.CanProposeWinner;
 
-                    //Emails all other users of bet
                     if (condition.UserEmail != currentUser.Email)
                     {
                         var emailObject = new BetStatusEmailViewModel
@@ -286,15 +305,9 @@ namespace ShipIt.Services
                     UserName = condition.UserEmail,
                     Subject = "The bet has been resolved! " + betInDb.BetWinner + " has won!",
                     Title = "All users have settled the bet!",
-                    BetPremise = betInDb.BetPremise,
-                    User1 = betInDb.Conditions.ElementAt(0).UserEmail,
-                    User1Condition = betInDb.Conditions.ElementAt(0).WinCondition,
-                    User2 = betInDb.Conditions.ElementAt(1).UserEmail,
-                    User2Condition = betInDb.Conditions.ElementAt(1).WinCondition,
-                    Url = "http://localhost:63907/bets/details/" + betInDb.Id.ToString(),
                     Description = "The bet is resolved! All wagers have been settled! Follow the link below to see the details or create a new bet."
                 };
-
+                LoadBetStatusEmailViewModel(betInDb, currentUser, emailObject);
                 emailService.BetStatusFormatEmail(emailObject);
             }
 
@@ -310,8 +323,8 @@ namespace ShipIt.Services
             betStatusEmailViewModel.User1Condition = betInDb.Conditions.ElementAt(0).WinCondition;
             betStatusEmailViewModel.User2 = betInDb.Conditions.ElementAt(1).UserEmail;
             betStatusEmailViewModel.User2Condition = betInDb.Conditions.ElementAt(1).WinCondition;
-            betStatusEmailViewModel.Url = "http://localhost:63907/bets/details/" + betInDb.Id.ToString();
-
+            betStatusEmailViewModel.Url = "http://shipitbet.azurewebsites.net/bets/details/" + betInDb.Id.ToString();
+            
             return betStatusEmailViewModel;
         }
     }

@@ -32,7 +32,7 @@ namespace ShipIt.Controllers
         // GET: Bet
         public ActionResult Index()
         {
-            return View();
+            return RedirectToAction("BetsIndex", "Bets");
         }
 
         //bets/betsindex/{id}
@@ -68,7 +68,7 @@ namespace ShipIt.Controllers
             var betsDetailViewModel = new BetsDetailViewModel
             {
                 BetId = betInDb.Id.ToString(),
-                BetWager = (betInDb.BetWager != null) ? betInDb.BetWager : "No wager was made.",
+                BetWager = betInDb.BetWager ?? "No wager was made.",
                 BetPremise = betInDb.BetPremise,
                 User1 = user1Conditions.UserEmail,
                 User1Condition = user1Conditions.WinCondition,
@@ -102,33 +102,8 @@ namespace ShipIt.Controllers
         [HttpPost]
         public ActionResult Save(NewBetViewModel newBetViewModel)
         {
-            Bet newBet = betService.SaveBet(GetCurrentUserId(), newBetViewModel);
+            betService.SaveBet(GetCurrentUserId(), newBetViewModel);
             ApplicationUser currentUser = betService.GetCurrentUser(GetCurrentUserId());
-
-            //Email all other users of bet
-            foreach (Condition condition in newBet.Conditions)
-            {
-                if (condition.UserEmail != currentUser.Email)
-                {
-                    var emailViewModel = new BetStatusEmailViewModel
-                    {
-                        RecipientEmail = condition.UserEmail,
-                        UserName = condition.UserEmail,
-                        Subject = "You've been included in a bet: " + newBet.BetPremise + "!",
-                        Title = "You've been included in a bet! ",
-                        BetPremise = newBet.BetPremise,
-                        User1 = newBet.Conditions.ElementAt(0).UserEmail,
-                        User1Condition = newBet.Conditions.ElementAt(0).WinCondition,
-                        User2 = newBet.Conditions.ElementAt(1).UserEmail,
-                        User2Condition = newBet.Conditions.ElementAt(1).WinCondition,
-                        Url = "http://localhost:63907/bets/details/" + newBet.Id.ToString(),
-                        Description = newBet.Conditions.ElementAt(0).UserEmail + " wins if " + newBet.Conditions.ElementAt(0).WinCondition
-                        + ", and " + newBet.Conditions.ElementAt(1).UserEmail + " wins if " + newBet.Conditions.ElementAt(1).WinCondition + ".",
-                    };
-
-                    emailService.BetStatusFormatEmail(emailViewModel);
-                }
-            }
 
             return RedirectToAction("BetsIndex", "Bets");
         }
