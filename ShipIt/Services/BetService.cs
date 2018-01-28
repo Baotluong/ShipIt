@@ -4,9 +4,6 @@ using System.Linq;
 using ShipIt.Models;
 using ShipIt.ViewModels;
 using System.Data.Entity;
-using System.Security.Policy;
-using System.Web.Http.Routing;
-using System.Web;
 
 namespace ShipIt.Services
 {
@@ -16,6 +13,7 @@ namespace ShipIt.Services
         Bet GetBet(string betId);
         string GetUserBetStatusMessage(UserBetStatus userBetStatus);
         void SaveBet(string currentUserId, NewBetViewModel newBetViewModel);
+        void DeleteBet(string currentUserId, string betId);
         void ClaimBetsAfterRegistering(string currrentUserId);
         void AcceptBet(string currentUserId, string betId);
         void ProposeWinner(string currentUserId, string proposedBetWinner, string betId);
@@ -118,22 +116,35 @@ namespace ShipIt.Services
 
             foreach (Condition condition in betToBeAdded.Conditions)
             {
-                if (condition.UserEmail != currentUser.Email)
+                var emailObject = new BetStatusEmailViewModel
                 {
-                    var emailObject = new BetStatusEmailViewModel
-                    {
-                        RecipientEmail = condition.UserEmail,
-                        UserName = condition.UserEmail,
-                        Subject = "You've been included in a bet: " + betToBeAdded.BetPremise + "!",
-                        Title = "You've been included in a bet! ",
-                        Description = betToBeAdded.Conditions.ElementAt(0).UserEmail + " wins if " + betToBeAdded.Conditions.ElementAt(0).WinCondition
-                        + ", and " + betToBeAdded.Conditions.ElementAt(1).UserEmail + " wins if " + betToBeAdded.Conditions.ElementAt(1).WinCondition + ".",
-                    };
+                    RecipientEmail = condition.UserEmail,
+                    UserName = condition.UserEmail,
+                    Subject = "You've been included in a bet: " + betToBeAdded.BetPremise + "!",
+                    Title = "You've been included in a bet! ",
+                };
 
-                    LoadBetStatusEmailViewModel(betToBeAdded, currentUser, emailObject);
-                    emailService.BetStatusFormatEmail(emailObject);
-                }
+                emailObject.Description = (condition.UserEmail == currentUser.Email) ?
+                    "The gloves are off! Once your opponent accepts, this bet will be active." :
+                    "Please log into your account to accept this bet. If you don't have an account, you can create one. It's fast and free.";
+
+                LoadBetStatusEmailViewModelAndSend(betToBeAdded, currentUser, emailObject);
             }
+        }
+
+        public void DeleteBet (string currentUserId, string betId)
+        {
+            var betInDb = GetBet(betId);
+            var currentUser = GetCurrentUser(currentUserId);
+
+            if (betInDb.ApplicationUsers.Contains(currentUser) == false || betInDb.BetStatus != BetStatus.Proposed)
+            {
+                throw new InvalidOperationException("This bet has been accepted. It can no longer be deleted.");
+            }
+
+            _context.Conditions.RemoveRange(betInDb.Conditions.Where(c => c.Bet.Id == betInDb.Id));
+            _context.Bets.Remove(betInDb);
+            _context.SaveChanges();
         }
 
         public void ClaimBetsAfterRegistering(string currentUserId)
@@ -178,21 +189,18 @@ namespace ShipIt.Services
                 {
                     condition.UserBetStatus = UserBetStatus.CanProposeWinner;
 
-                    if (condition.UserEmail != currentUser.Email)
+                    var emailObject = new BetStatusEmailViewModel
                     {
-                        var emailObject = new BetStatusEmailViewModel
-                        {
-                            RecipientEmail = condition.UserEmail,
-                            UserName = condition.UserEmail,
-                            Subject = betInDb.BetPremise + " is now active!",
-                            Title = "This bet is now active!",
-                            Description = betInDb.Conditions.ElementAt(0).UserEmail + " and " + betInDb.Conditions.ElementAt(1).UserEmail
-                            + " have accepted the terms of the bet. Follow the link below to record the winner after the bet ends!"
-                        };
-                        LoadBetStatusEmailViewModel(betInDb, currentUser, emailObject);
-                        emailService.BetStatusFormatEmail(emailObject);
-                    }
-                }
+                        RecipientEmail = condition.UserEmail,
+                        UserName = condition.UserEmail,
+                        Subject = betInDb.BetPremise + " is now active!",
+                        Title = "This bet is now active!",
+                        Description = betInDb.Conditions.ElementAt(0).UserEmail + " and " + betInDb.Conditions.ElementAt(1).UserEmail
+                        + " have accepted the terms of the bet. Follow the link below to record the winner after the bet ends!"
+                    };
+
+                    LoadBetStatusEmailViewModelAndSend(betInDb, currentUser, emailObject);
+                   }
             }
             _context.SaveChanges();
         }
@@ -211,6 +219,7 @@ namespace ShipIt.Services
             _context.SaveChanges();
 
             if (betInDb.ProposedBetWinner == currentUser.Email)
+            {
                 foreach (Condition condition in betInDb.Conditions)
                 {
                     condition.UserBetStatus = (condition.UserEmail == proposedBetWinner) ? UserBetStatus.WaitingForAcceptWinner : UserBetStatus.CanAcceptWinner;
@@ -224,9 +233,10 @@ namespace ShipIt.Services
                         Description = currentUser.Email + " has proposed that " + proposedBetWinner
                         + " won this bet. Follow the link below to accept this result or propose a different result!"
                     };
-                    LoadBetStatusEmailViewModel(betInDb, currentUser, emailObject);
-                    emailService.BetStatusFormatEmail(emailObject);
+                    LoadBetStatusEmailViewModelAndSend(betInDb, currentUser, emailObject);
                 }
+                _context.SaveChanges();
+            }
             else
                 AcceptWinner(currentUserId, betId);
         }
@@ -280,8 +290,7 @@ namespace ShipIt.Services
                     betInDb.BetStatus = BetStatus.Completed;
                 }
 
-                LoadBetStatusEmailViewModel(betInDb, currentUser, emailObject);
-                emailService.BetStatusFormatEmail(emailObject);
+                LoadBetStatusEmailViewModelAndSend(betInDb, currentUser, emailObject);
             }
             _context.SaveChanges();
         }
@@ -307,8 +316,7 @@ namespace ShipIt.Services
                     Title = "All users have settled the bet!",
                     Description = "The bet is resolved! All wagers have been settled! Follow the link below to see the details or create a new bet."
                 };
-                LoadBetStatusEmailViewModel(betInDb, currentUser, emailObject);
-                emailService.BetStatusFormatEmail(emailObject);
+                LoadBetStatusEmailViewModelAndSend(betInDb, currentUser, emailObject);
             }
 
             betInDb.BetStatus = BetStatus.Settled;
@@ -316,7 +324,7 @@ namespace ShipIt.Services
             _context.SaveChanges();
         }
 
-        private BetStatusEmailViewModel LoadBetStatusEmailViewModel(Bet betInDb, ApplicationUser currentUser, BetStatusEmailViewModel betStatusEmailViewModel)
+        private void LoadBetStatusEmailViewModelAndSend(Bet betInDb, ApplicationUser currentUser, BetStatusEmailViewModel betStatusEmailViewModel)
         {
             betStatusEmailViewModel.BetPremise = betInDb.BetPremise;
             betStatusEmailViewModel.User1 = betInDb.Conditions.ElementAt(0).UserEmail;
@@ -324,8 +332,8 @@ namespace ShipIt.Services
             betStatusEmailViewModel.User2 = betInDb.Conditions.ElementAt(1).UserEmail;
             betStatusEmailViewModel.User2Condition = betInDb.Conditions.ElementAt(1).WinCondition;
             betStatusEmailViewModel.Url = "http://shipitbet.azurewebsites.net/bets/details/" + betInDb.Id.ToString();
-            
-            return betStatusEmailViewModel;
+
+            emailService.BetStatusFormatEmail(betStatusEmailViewModel);
         }
     }
 }

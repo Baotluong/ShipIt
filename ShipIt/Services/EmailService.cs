@@ -53,7 +53,7 @@ namespace ShipIt.Services
         {
             using (MailMessage mailMessage = new MailMessage())
             {
-                mailMessage.From = new MailAddress(ConfigurationManager.AppSettings["EmailUserName"]);
+                mailMessage.From = new MailAddress(ConfigurationManager.AppSettings["FromEmail"]);
                 mailMessage.Subject = subject;
                 mailMessage.Body = body;
                 mailMessage.IsBodyHtml = true;

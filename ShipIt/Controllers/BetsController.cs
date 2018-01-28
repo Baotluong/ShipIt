@@ -99,11 +99,24 @@ namespace ShipIt.Controllers
             return View("BetForm", viewModel);
         }
 
+        public ActionResult Delete(string id)
+        {
+            try
+            {
+                betService.DeleteBet(GetCurrentUserId(), id);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return RedirectToAction("Details", "Bets", new { id = id, errorMessage = ex });
+            }
+
+            return RedirectToAction("BetsIndex", "Bets");
+        }
+
         [HttpPost]
         public ActionResult Save(NewBetViewModel newBetViewModel)
         {
             betService.SaveBet(GetCurrentUserId(), newBetViewModel);
-            ApplicationUser currentUser = betService.GetCurrentUser(GetCurrentUserId());
 
             return RedirectToAction("BetsIndex", "Bets");
         }

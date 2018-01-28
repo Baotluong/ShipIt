@@ -30,7 +30,7 @@
     else if (Model.ProposedBetWinner != null)
     {
         <div class="details-label">Proposed Winner:</div>
-        <div class="details-information">Model.ProposedBetWinner</div>
+        <div class="details-information">@Model.ProposedBetWinner</div>
     }
 
     <div class="details-label"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>1</div>
@@ -57,9 +57,11 @@
     {
         case "CanAcceptBet":
             <button class="btn btn-primary confirm" id="can-accept-bet" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">Accept Bet</button>
+            <button class="btn btn-warning danger" id="can-delete-bet" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">Delete Bet</button>
             break;
 
         case "WaitingForAcceptBet":
+            <button class="btn btn-warning danger" id="can-delete-bet" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">Delete Bet</button>
             break;
 
         case "CanProposeWinner":
@@ -74,12 +76,12 @@
             if (Model.ProposedBetWinner == Model.User1)
             {
                 <button class="btn btn-success confirm" id="can-accept-winner" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">Yes, @Model.ProposedBetWinner Won</button>
-                <button class="btn btn-danger confirm" id="can-propose-winner-1" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">No, @Model.User2 Won</button>
+                <button class="btn btn-danger confirm" id="can-propose-winner-2" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">No, @Model.User2 Won</button>
             }
             else
             {
                 <button class="btn btn-success confirm" id="can-accept-winner" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">Yes, @Model.ProposedBetWinner Won</button>
-                <button class="btn btn-danger confirm" id="can-propose-winner-2" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">No, @Model.User1 Won</button>
+                <button class="btn btn-danger confirm" id="can-propose-winner-1" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Updating Bet...">No, @Model.User1 Won</button>
             }
             break;
 
@@ -123,6 +125,10 @@
                         if (result) {
                             $(".confirm").button("loading");
                             switch (id) {
+                                case "can-delete-bet":
+                                    window.location.href = '@Url.Action("Delete", "Bets", new { id = Model.BetId })';
+                                    break;
+
                                 case "can-accept-bet":
                                     window.location.href = '@Url.Action("AcceptBet", "Bets", new { betId = Model.BetId })';
                                     break;
